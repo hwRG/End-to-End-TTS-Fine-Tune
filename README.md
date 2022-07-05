@@ -115,7 +115,7 @@ FastSpeech2와 HiFi-GAN을 활용해 End-to-End 한국어 음성합성을 쉽게
 <br>
 
 ## Project Pipeline
-
+![](https://velog.velcdn.com/images/hws0120/post/b2693c9a-cc22-4e02-8c54-ab46276e212d/image.png)
 학습과 합성이 수행되는 파이프라인입니다.<br>
 
 구성에 따라 3개로 나뉘어질 컨테이너를 하나의 이미지에 담았습니다. 
