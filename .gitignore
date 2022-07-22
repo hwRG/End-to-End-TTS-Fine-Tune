@@ -132,6 +132,7 @@ dmypy.json
 .pyre/
 
 ckpt/
+results/
 FastSpeech2/log/
 FastSpeech2/ckpt/
 FastSpeech2/results/
@@ -139,7 +140,6 @@ FastSpeech2/eval/
 FastSpeech2/preprocessed/
 FastSpeech2/vocoder/pretrained_models/
 dataset/
-results/
 
 HiFi-GAN/ckpt
 HiFi-GAN/dataset
