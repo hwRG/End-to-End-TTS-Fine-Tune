@@ -107,7 +107,7 @@ def process_utterance(in_dir, out_dir, filename, scalers):
     if start >= end:
         return None
 
-    # Read and trim wav files (묵음 날려버림)
+    # Read and trim wav files (묵음 날려버림) - textgrid 활용
     _, wav = read(wav_path)
     wav = wav[int(hp.sampling_rate*start):int(hp.sampling_rate*end)].astype(np.float32)
 

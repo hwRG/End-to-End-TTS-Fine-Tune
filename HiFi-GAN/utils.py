@@ -6,6 +6,9 @@ from torch.nn.utils import weight_norm
 matplotlib.use("Agg")
 import matplotlib.pylab as plt
 
+import warnings
+warnings.filterwarnings(action='ignore')
+
 
 def plot_spectrogram(spectrogram):
     fig, ax = plt.subplots(figsize=(10, 2))

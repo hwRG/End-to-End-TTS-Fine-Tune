@@ -199,6 +199,7 @@ def combine_wav(path, cnt):
             combined_sounds += AudioSegment.from_wav(curPath)
         os.remove(curPath)
 
+    # 최종 오디오 파일
     combined_sounds.export(path, format="wav")
     print(path, 'done')
 
@@ -227,7 +228,10 @@ def hifigan_infer(mel_list, path, synthesize=False):
             y_g_hat = generator(x)
             audio = y_g_hat.squeeze()
             audio = audio * 32768.0 # MAX_WAV_VALUE
+            
+            # 최종
             audio = audio.cpu().numpy().astype('int16')
+
             curPath = path[:-4] + '_' + str(cnt) + path[-4:]
             wavfile.write(curPath, hp.sampling_rate, audio)
             print(curPath, 'done')

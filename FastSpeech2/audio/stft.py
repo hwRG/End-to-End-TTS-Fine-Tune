@@ -11,6 +11,9 @@ from audio.audio_processing import dynamic_range_compression
 from audio.audio_processing import dynamic_range_decompression
 from audio.audio_processing import window_sumsquare
 
+import warnings
+warnings.filterwarnings(action='ignore')
+
 
 class STFT(torch.nn.Module):
     """adapted from Prem Seetharaman's https://github.com/pseeth/pytorch-stft"""

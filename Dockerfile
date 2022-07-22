@@ -5,7 +5,7 @@ ENV PATH /opt/conda/bin:$PATH
 
 # Install Dependencies of Miniconda
 RUN apt-get update && \
-    apt-get install -y wget libsndfile1 nano build-essential && \
+    apt-get install -y wget libsndfile1 ffmpeg nano build-essential && \
     rm -rf /var/lib/apt/lists/* 
     #apt-get clean && \
 

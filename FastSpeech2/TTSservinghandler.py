@@ -25,6 +25,8 @@ from g2pk.g2pk import G2p
 from jamo import h2j
 from ts.torch_handler.base_handler import BaseHandler
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        
 
 def get_FastSpeech2(num, synthesize=False):
     checkpoint_path = os.path.join(hp.checkpoint_path, hp.dataset, "checkpoint_{}_{}.pth".format(hp.dataset, num))
@@ -54,18 +56,17 @@ def kor_preprocess(text):
 
 class TTSHandler(BaseHandler):
     def __init__(self):
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.model = None
         self.dataset = hp.dataset
     
 
     def initialize(self):
         self.g2p=G2p()
-        self.model = get_FastSpeech2('255000', True).to(self.device)
+        self.model = get_FastSpeech2('255000', True).to(device)
         
-        self.mean_mel, self.std_mel = torch.tensor(np.load(os.path.join(hp.preprocessed_path, "mel_stat.npy")), dtype=torch.float).to(self.device)
-        self.mean_f0, self.std_f0 = torch.tensor(np.load(os.path.join(hp.preprocessed_path, "f0_stat.npy")), dtype=torch.float).to(self.device)
-        self.mean_energy, self.std_energy = torch.tensor(np.load(os.path.join(hp.preprocessed_path, "energy_stat.npy")), dtype=torch.float).to(self.device)
+        self.mean_mel, self.std_mel = torch.tensor(np.load(os.path.join(hp.preprocessed_path, "mel_stat.npy")), dtype=torch.float).to(device)
+        self.mean_f0, self.std_f0 = torch.tensor(np.load(os.path.join(hp.preprocessed_path, "f0_stat.npy")), dtype=torch.float).to(device)
+        self.mean_energy, self.std_energy = torch.tensor(np.load(os.path.join(hp.preprocessed_path, "energy_stat.npy")), dtype=torch.float).to(device)
 
         self.mean_mel, self.std_mel = self.mean_mel.reshape(1, -1), self.std_mel.reshape(1, -1)
         self.mean_f0, self.std_f0 = self.mean_f0.reshape(1, -1), self.std_f0.reshape(1, -1)
@@ -87,8 +88,8 @@ class TTSHandler(BaseHandler):
 
     
     def inference(self, data):
-        data = kor_preprocess(data).to(self.device)
-        src_len = torch.from_numpy(np.array([data.shape[1]])).to(self.device)
+        data = kor_preprocess(data).to(device)
+        src_len = torch.from_numpy(np.array([data.shape[1]])).to(device)
 
         mel, mel_postnet, log_duration_output, f0_output, energy_output, _, _, mel_len = self.model(data, src_len, synthesize=True)
         
@@ -107,8 +108,6 @@ class TTSHandler(BaseHandler):
         self.total_f0_output.append(f0_output)
         self.total_energy_output.append(energy_output)
     
-    """def postprocess(self, data):   
-        return data.strip()"""
 
     def handle(self, data):
         sentence = data.split(' ')[:6]
@@ -116,8 +115,7 @@ class TTSHandler(BaseHandler):
         for i in sentence:
             sent += i + ' '
         sentence = sent
-        while True: # 챗봇 생성 다음 단어가 eof면 끝내도록
-            # 마지막으로 
+        while True:
             data = self.preprocess(data)
             for word in self.text_list:
                 data += word + ' '
@@ -141,5 +139,4 @@ class TTSHandler(BaseHandler):
         
             utils.hifigan_infer(self.total_mel_postnet_torch, path=os.path.join(hp.test_path, '{}.wav'.format(sentence)), synthesize=True)
         # dict or array 형태로 return
-        #return 
-    
+        return True

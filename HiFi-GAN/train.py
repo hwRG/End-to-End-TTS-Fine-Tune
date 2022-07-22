@@ -25,6 +25,9 @@ import glob
 
 torch.backends.cudnn.benchmark = True
 
+import warnings
+warnings.filterwarnings(action='ignore')
+
 
 def train(rank, a, h):
     if h.num_gpus > 1:
