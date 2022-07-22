@@ -139,6 +139,7 @@ FastSpeech2/eval/
 FastSpeech2/preprocessed/
 FastSpeech2/vocoder/pretrained_models/
 dataset/
+results/
 
 HiFi-GAN/ckpt
 HiFi-GAN/dataset
