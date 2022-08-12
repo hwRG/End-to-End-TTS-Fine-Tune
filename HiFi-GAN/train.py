@@ -23,6 +23,10 @@ from transcript_to_txt import make_txt
 
 import glob
 
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+from param import param
+
 torch.backends.cudnn.benchmark = True
 
 import warnings
@@ -34,15 +38,11 @@ def train(rank, a, h):
         init_process_group(backend=h.dist_config['dist_backend'], init_method=h.dist_config['dist_url'],
                            world_size=h.dist_config['world_size'] * h.num_gpus, rank=rank)
 
-    transcript = glob.glob('../dataset/fine_tune_transcript.txt')
     # dataset 이름 확정하기 위해 dataset 디렉토리 활용 
-    dataset_name = os.listdir('../dataset')[0]
-    dataset_name = dataset_name.replace('_', '')
-    #print('\n\n\n', dataset_name, '\n\n\n')
+    #dataset_name = os.listdir('../dataset')[0]
+    #dataset_name = dataset_name.replace('_', '')
+    dataset_name = param.target_dir
     
-    #if not os.path.isfile(wav_path):
-    #    os.system("ffmpeg -i {} -ac 1 -ar 16000 {}".format(wav_bak_path, wav_path))   
-
 
     torch.cuda.manual_seed(h.seed)
     device = torch.device('cuda:{:d}'.format(rank))
@@ -184,7 +184,7 @@ def train(rank, a, h):
 
                 # checkpointing
                 if steps % a.checkpoint_interval == 0 and steps != 0:
-                    checkpoint_path = "{}/{}/{}_g_{:08d}.pt".format(a.out_checkpoint_path, dataset_name, dataset_name, steps)
+                    checkpoint_path = "{}/{}/{}_g_{:08d}.pt".format(a.out_checkpoint_path, param.target_dir, param.dataset, steps)
                     save_checkpoint(checkpoint_path,
                                     {'generator': (generator.module if h.num_gpus > 1 else generator).state_dict()})
                     """checkpoint_path = "{}/{}/{}_do_{:08d}.pt".format(a.checkpoint_path, dataset_name, dataset_name, steps)
@@ -248,22 +248,19 @@ def main():
 
     print('Initializing Training Process..')
 
-    dataset_name = os.listdir('../dataset')[0]
-    dataset_name = dataset_name.replace('_', '')
-
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--group_name', default=None)
-    parser.add_argument('--input_wavs_dir', default='../dataset/_{}/wavs'.format(dataset_name))
+    parser.add_argument('--input_wavs_dir', default='../{}'.format(param.direct_dir))
     parser.add_argument('--input_mels_dir', default='ft_dataset')
     parser.add_argument('--input_training_file', default='dataset/training.txt')
     parser.add_argument('--input_validation_file', default='dataset/validation.txt')
     parser.add_argument('--checkpoint_path', default='ckpt')
     parser.add_argument('--out_checkpoint_path', default='../ckpt')
     parser.add_argument('--config', default='config_v1.json') # v1
-    parser.add_argument('--training_epochs', default=3100, type=int)
+    parser.add_argument('--training_epochs', default=810, type=int)
     parser.add_argument('--stdout_interval', default=100, type=int)
-    parser.add_argument('--checkpoint_interval', default=5000, type=int)
+    parser.add_argument('--checkpoint_interval', default=10000, type=int)
     parser.add_argument('--summary_interval', default=100, type=int)
     parser.add_argument('--validation_interval', default=2000, type=int)
     parser.add_argument('--fine_tuning', default=False, type=bool)

@@ -1,13 +1,6 @@
 #!/bin/sh
-
-echo "Enter the dataset name"
-read dataset
-echo "Selected Dataset: $dataset"
-
 cd FastSpeech2
+python3 s3_target_wav_load.py
 
-mv ../dataset/$dataset ../dataset/_$dataset
-
+# FastSpeech2 preprocess
 python3 data_preprocessing.py
-
-mv ../dataset/_$dataset ../dataset/$dataset

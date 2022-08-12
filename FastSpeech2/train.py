@@ -65,13 +65,13 @@ def main(args):
             os.makedirs(checkpoint_path)
 
     # read params
-    mean_mel, std_mel = torch.tensor(np.load(os.path.join(hp.preprocessed_path, "mel_stat.npy")), dtype=torch.float).to(device)
+    """mean_mel, std_mel = torch.tensor(np.load(os.path.join(hp.preprocessed_path, "mel_stat.npy")), dtype=torch.float).to(device)
     mean_f0, std_f0 = torch.tensor(np.load(os.path.join(hp.preprocessed_path, "f0_stat.npy")), dtype=torch.float).to(device)
     mean_energy, std_energy = torch.tensor(np.load(os.path.join(hp.preprocessed_path, "energy_stat.npy")), dtype=torch.float).to(device)
 
     mean_mel, std_mel = mean_mel.reshape(1, -1), std_mel.reshape(1, -1)
     mean_f0, std_f0 = mean_f0.reshape(1, -1), std_f0.reshape(1, -1)
-    mean_energy, std_energy = mean_energy.reshape(1, -1), std_energy.reshape(1, -1)
+    mean_energy, std_energy = mean_energy.reshape(1, -1), std_energy.reshape(1, -1)"""
 
 
     # Load HiFi-GAN or VocGAN
@@ -204,29 +204,17 @@ def main(args):
                 train_logger.add_scalar('Loss/energy_loss', e_l, current_step)
                 
                 if current_step % hp.save_step == 0:
-                    if not os.path.exists(os.path.join(checkpoint_path, hp.dataset)):
-                        os.mkdir(os.path.join(checkpoint_path, hp.dataset))
+                    if not os.path.exists(os.path.join(checkpoint_path, hp.user_id)):
+                        os.mkdir(os.path.join(checkpoint_path, hp.user_id))
+                    if not os.path.exists(os.path.join(checkpoint_path, hp.target_dir)):
+                        os.mkdir(os.path.join(checkpoint_path, hp.target_dir))
+
                     torch.save({'model': model.state_dict(), 'optimizer': optimizer.state_dict(
-                    )}, os.path.join(checkpoint_path, hp.dataset, 'checkpoint_{}_{}.pth'.format(hp.dataset, current_step)))
+                    )}, os.path.join(checkpoint_path, hp.target_dir, 'checkpoint_{}_{}.pth'.format(hp.dataset, current_step)))
                     print("save model at step {} ...".format(current_step))
                     
                     print(datetime.datetime.now() + datetime.timedelta(hours=9))
 
-                if current_step % hp.eval_step == 0:
-                    model.eval()
-                    with torch.no_grad():
-                        d_l, f_l, e_l, m_l, m_p_l = evaluate(model, current_step, speaker_table, vocoder)
-                        t_l = d_l + f_l + e_l + m_l + m_p_l
-                        
-                        print(datetime.datetime.now() + datetime.timedelta(hours=9))
-                        val_logger.add_scalar('Loss/total_loss', t_l, current_step)
-                        val_logger.add_scalar('Loss/mel_loss', m_l, current_step)
-                        val_logger.add_scalar('Loss/mel_postnet_loss', m_p_l, current_step)
-                        val_logger.add_scalar('Loss/duration_loss', d_l, current_step)
-                        val_logger.add_scalar('Loss/F0_loss', f_l, current_step)
-                        val_logger.add_scalar('Loss/energy_loss', e_l, current_step)
-
-                    model.train()
                     
                 end_time = time.perf_counter()
                 Time = np.append(Time, end_time - start_time)

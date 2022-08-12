@@ -1,20 +1,40 @@
 import os
 
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+from param import param
+
+data_path = param.data_dir
+target_dir = param.target_dir
+direct_dir = param.direct_dir
+
+dataset = param.dataset
+user_id = param.user_id
+"""
 # dataset 이름 확인을 위해 dataset 디렉토리 활용 
 dataset = os.listdir('../dataset')[0]
-dataset = dataset.replace('_', '')
+dataset = dataset.replace('_', '')"""
 
 
 # Vocoder
 vocoder = 'hifigan'
-vocoder_pretrained_model_name = dataset + "_g_00330000.pt"
-vocoder_pretrained_model_path = os.path.join("../ckpt/", dataset, vocoder_pretrained_model_name)
+vocoder_pretrained_model_name = dataset + "_g_00650000.pt" # 600000 + 50000
+vocoder_pretrained_model_path = os.path.join("../ckpt/", param.target_dir, vocoder_pretrained_model_name)
 
 
-data_path = os.path.join("../dataset/", dataset)
+data_path = os.path.join(param.direct_dir)
 meta_name = "fine_tune_transcript.txt"
 textgrid_name = dataset + "textgrids.zip"
 
+# Default Sampling rate - 22050
+sampling_rate = param.sampling_rate
+
+# Checkpoints and synthesis path
+preprocessed_path = os.path.join("./preprocessed/", target_dir)
+checkpoint_path = os.path.join("../ckpt/")
+eval_path = os.path.join("./eval/", target_dir)
+log_path = os.path.join("./log/", target_dir)
+test_path = os.path.join("../results/", target_dir)
 
 ### set GPU number ###
 train_visible_devices = "0,1"
@@ -25,8 +45,6 @@ text_cleaners = ['korean_cleaners']
 
 
 # Audio and mel
-# Default Sampling rate - 16000
-sampling_rate = 16000
 filter_length = 1024
 hop_length = 256
 win_length = 1024
@@ -60,17 +78,11 @@ variance_predictor_dropout = 0.5
 
 max_seq_len = 1000
 
-# Checkpoints and synthesis path
-preprocessed_path = os.path.join("./preprocessed/", dataset)
-checkpoint_path = os.path.join("../ckpt/")
-eval_path = os.path.join("./eval/", dataset)
-log_path = os.path.join("./log/", dataset)
-test_path = os.path.join("../results/", dataset)
 
 
 # Optimizer
 batch_size = 8
-epochs = 630 # 5000 step
+epochs = 760 # 5000 step
 n_warm_up_step = 4000
 grad_clip_thresh = 1.0
 acc_steps = 1

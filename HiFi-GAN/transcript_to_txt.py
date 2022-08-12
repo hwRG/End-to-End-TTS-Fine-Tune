@@ -45,6 +45,8 @@ def make_txt():
             line = line.replace('.wav', '')
             name = line[:line.find('|')]
             line = line[line.find('|')+1:]
+            line = line[line.find('|')+1:]
+            line = line[line.find('|')+1:]
             text = line[:line.find('|')]
             text = line_replace(text)
             train_val.append(name + '|' + text + '|' + text + '\n')

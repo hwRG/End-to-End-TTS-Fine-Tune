@@ -37,7 +37,7 @@ def build_from_path(in_dir, out_dir, meta):
     print(os.path.join(in_dir, '../' + meta))
     print()
     print()
-    with open(os.path.join(in_dir, '../' + meta), encoding='utf-8') as f:
+    with open(os.path.join('../', in_dir, '../../' + meta), encoding='utf-8') as f:
         for index, line in enumerate(f):
             parts = line.strip().split('|')
             # basename은 100063/12229.wav 형식
@@ -87,7 +87,7 @@ def build_from_path(in_dir, out_dir, meta):
 
 def process_utterance(in_dir, out_dir, filename, scalers):
 
-    wav_path = os.path.join(in_dir, 'wavs', '{}.wav'.format(filename[:-4]))
+    wav_path = os.path.join('../', hp.direct_dir, '{}.wav'.format(filename[:-4]))
     
     # Textgrid 디렉토리 설정
     tg_path = os.path.join(out_dir, 'textgrids', '{}.TextGrid'.format(filename[:-4])) 

@@ -131,15 +131,16 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-ckpt/
-results/
 FastSpeech2/log/
 FastSpeech2/ckpt/
 FastSpeech2/results/
 FastSpeech2/eval/
 FastSpeech2/preprocessed/
 FastSpeech2/vocoder/pretrained_models/
-dataset/
 
-HiFi-GAN/ckpt
-HiFi-GAN/dataset
+HiFi-GAN/ckpt/
+HiFi-GAN/dataset/
+
+ckpt/
+results/
+fine-tune-datset/
