@@ -20,7 +20,7 @@ RUN conda update -n base -c defaults conda && \
     conda install -c conda-forge montreal-forced-aligner && \
     ln -s /usr/lib/x86_64-linux-gnu/libffi.so.6 /usr/lib/x86_64-linux-gnu/libffi.so.7
 
-RUN pip install -v boto3 jamo nltk pydub scipy
+RUN pip install -v boto3 jamo nltk pydub scipy python-dotenv
 
 
 CMD ["sh", "run_preprocess.sh"]

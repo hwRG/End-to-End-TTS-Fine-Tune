@@ -131,6 +131,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+FastSpeech2/.env
+
 FastSpeech2/log/
 FastSpeech2/ckpt/
 FastSpeech2/results/
@@ -144,5 +146,4 @@ HiFi-GAN/dataset/
 
 ckpt/
 results/
-fine-tune-datset/pnylove12
-fine-tune-datset/pnylove12/NY-woman
+fine-tune-dataset/
