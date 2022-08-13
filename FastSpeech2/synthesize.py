@@ -46,7 +46,7 @@ def kor_preprocess(text):
 
 
 def get_FastSpeech2(num, synthesize=False):
-    checkpoint_path = os.path.join(hp.checkpoint_path, hp.dataset, "checkpoint_{}_{}.pth".format(hp.dataset, num))
+    checkpoint_path = os.path.join(hp.checkpoint_path, hp.target_dir, "checkpoint_{}_{}.pth".format(hp.dataset, num))
     model = nn.DataParallel(FastSpeech2(synthesize=synthesize))
     model.load_state_dict(torch.load(checkpoint_path, map_location=device)['model'])
     model.requires_grad = False

@@ -5,7 +5,7 @@ ENV PATH /opt/conda/bin:$PATH
 
 # Install Dependencies of Miniconda
 RUN apt-get update && \
-    apt-get install -y libsndfile1 ffmpeg && \
+    apt-get install -y wget libsndfile1 ffmpeg build-essential && \
     rm -rf /var/lib/apt/lists/* 
 
 # Install miniconda3
@@ -20,4 +20,7 @@ RUN conda update -n base -c defaults conda && \
     conda install -c conda-forge montreal-forced-aligner && \
     ln -s /usr/lib/x86_64-linux-gnu/libffi.so.6 /usr/lib/x86_64-linux-gnu/libffi.so.7
 
-CMD ["sh", "run_preprocess"]
+RUN pip install -v boto3 jamo nltk pydub scipy
+
+
+CMD ["sh", "run_preprocess.sh"]

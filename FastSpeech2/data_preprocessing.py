@@ -115,7 +115,7 @@ def lab_separate():
 
 if __name__ == '__main__':
     os.chdir('../{}'.format(hp.data_path))
-
+    print(os.getcwd())
     # 1) mfa를 위해 데이터마다 lab 파일 생성
     aligner()
 

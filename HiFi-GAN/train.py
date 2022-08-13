@@ -258,7 +258,7 @@ def main():
     parser.add_argument('--checkpoint_path', default='ckpt')
     parser.add_argument('--out_checkpoint_path', default='../ckpt')
     parser.add_argument('--config', default='config_v1.json') # v1
-    parser.add_argument('--training_epochs', default=810, type=int)
+    parser.add_argument('--training_epochs', default=525, type=int)
     parser.add_argument('--stdout_interval', default=100, type=int)
     parser.add_argument('--checkpoint_interval', default=10000, type=int)
     parser.add_argument('--summary_interval', default=100, type=int)

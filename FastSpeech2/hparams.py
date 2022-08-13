@@ -4,12 +4,13 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from param import param
 
-data_path = param.data_dir
-target_dir = param.target_dir
-direct_dir = param.direct_dir
+data_path = param.data_dir # fine-tune-datset/ID
 
-dataset = param.dataset
-user_id = param.user_id
+target_dir = param.target_dir # ID/Speaker
+direct_dir = param.direct_dir # fine-tune-datset/ID/Speaker
+
+dataset = param.dataset # Speaker
+user_id = param.user_id # ID
 """
 # dataset 이름 확인을 위해 dataset 디렉토리 활용 
 dataset = os.listdir('../dataset')[0]
@@ -18,7 +19,7 @@ dataset = dataset.replace('_', '')"""
 
 # Vocoder
 vocoder = 'hifigan'
-vocoder_pretrained_model_name = dataset + "_g_00650000.pt" # 600000 + 50000
+vocoder_pretrained_model_name = dataset + "_g_00610000.pt" # 600000 + 50000
 vocoder_pretrained_model_path = os.path.join("../ckpt/", param.target_dir, vocoder_pretrained_model_name)
 
 

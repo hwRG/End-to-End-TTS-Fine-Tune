@@ -137,6 +137,7 @@ FastSpeech2/results/
 FastSpeech2/eval/
 FastSpeech2/preprocessed/
 FastSpeech2/vocoder/pretrained_models/
+FastSpeech2/s3_target_wav_load.py
 
 HiFi-GAN/ckpt/
 HiFi-GAN/dataset/

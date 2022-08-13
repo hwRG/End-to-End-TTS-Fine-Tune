@@ -13,8 +13,8 @@ target_path_origin = param.direct_dir + '-origin'
 
 def load_from_s3():
     # set aws credentials 
-    s3r = boto3.resource('s3', aws_access_key_id='AKIA6AIFPD7P57S2RYX7',
-        aws_secret_access_key='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')
+    s3r = boto3.resource('s3', aws_access_key_id='AKIA6AIFPD7P4RRW2TUT',
+        aws_secret_access_key='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')
     bucket = s3r.Bucket('nearby-development-bucket')
 
     # mkdir
