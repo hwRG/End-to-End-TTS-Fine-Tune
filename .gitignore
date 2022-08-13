@@ -144,4 +144,5 @@ HiFi-GAN/dataset/
 
 ckpt/
 results/
-fine-tune-datset/
+fine-tune-datset/pnylove12
+fine-tune-datset/pnylove12/NY-woman
