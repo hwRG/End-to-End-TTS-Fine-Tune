@@ -3,7 +3,7 @@ import os
 
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-from param import param
+from param import user_param
 
 from pydub import AudioSegment
 import scipy.io as sio
@@ -17,6 +17,7 @@ load_dotenv()
 
 class S3TargetLoader:
     def __init__(self):
+        param = user_param.UserParam()
         self.target_path_origin = param.direct_dir + '-origin'
 
         self.aws_access_id = os.environ.get("access_id")

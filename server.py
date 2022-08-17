@@ -4,6 +4,10 @@ from fastapi import FastAPI
 
 from dto.TTS_dto import TTSTrainDto, TTSInferenceDto
 
+from FastSpeech2 import train as FS2train
+from HiFiGAN import train as HGtrain
+from param import user_param
+
 # uvicorn 2enum:app --reload
 
 # str을 상속하여 값이 모두 str이어야 한다고 인지하고 제대로 렌더링
@@ -18,21 +22,19 @@ app = FastAPI()
 
 @app.get("/tts/train")
 async def tts_train(target_inf: TTSTrainDto):
-    if model_name == ModelName.fastspeech2:
-        return {"model_name": model_name, "message": "FastSpeech2 Ckpt load Successed"}
+    # param을 어떻게 hparam이나 HiFiGAN에 활용할 수 있을지에 대해 고민해야 함
+    param = user_param.UserParam(target_inf.caregiver_id, target_inf.voice_target)
+    FS2_trainer = FS2train.FS2Train()
+    HG_trainer = HGtrain.FS2Train()
 
-    return {"model_name": model_name, "message": "Best Performance"}
+
+    return 
 
 
 @app.get("/tts/inference")
-async def tts_inference(model_name: TTSInferenceDto):
-    if model_name == ModelName.fastspeech2:
-        return {"model_name": model_name, "message": "FastSpeech2 Ckpt load Successed"}
+async def tts_inference(target_text: TTSInferenceDto):
 
-    if model_name.value == "hifi-gan":
-        return {"model_name": model_name, "message": "HiFi-GAN upload OK"}
-
-    return {"model_name": model_name, "message": "Best Performance"}
+    return 
 
     
 

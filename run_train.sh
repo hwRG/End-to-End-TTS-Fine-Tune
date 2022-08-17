@@ -7,5 +7,5 @@ python3 train.py --restore_step kaist_300000
 cd ..
 
 # HiFi-GAN Training
-cd HiFi-GAN
+cd HiFiGAN
 python3 train.py

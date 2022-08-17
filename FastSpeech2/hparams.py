@@ -2,7 +2,9 @@ import os
 
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-from param import param
+from param import user_param
+
+param = user_param.UserParam()
 
 data_path = param.data_dir # fine-tune-datset/ID
 
