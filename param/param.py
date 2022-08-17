@@ -1,7 +1,7 @@
 base_dir = 'fine-tune-dataset/'
 
-user_id = 'pnylove12/'
-dataset = 'NY-woman'
+user_id = 'hws0120/'
+dataset = 'HW-man'
 
 data_dir = base_dir + user_id
 target_dir = user_id + dataset
