@@ -5,7 +5,10 @@ import numpy as np
 import transformer.Constants as Constants
 from transformer.Layers import FFTBlock
 from text.symbols import symbols
-import hparams as hp
+
+import hparams
+
+hp = hparams.hparam()
 
 def get_sinusoid_encoding_table(n_position, d_hid, padding_idx=None):
     ''' Sinusoid position encoding table '''

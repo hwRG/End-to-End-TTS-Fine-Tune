@@ -6,7 +6,9 @@ from transformer.Models import Encoder, Decoder
 from transformer.Layers import PostNet
 from modules import VarianceAdaptor
 from utils import get_mask_from_lengths, Embedding, SpeakerIntegrator, get_speakers
-import hparams as hp
+import hparams
+
+hp = hparams.hparam()
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -14,11 +16,11 @@ class FastSpeech2(nn.Module):
     """ FastSpeech2 """
 
     # !! embedding을 위한 파라미터 추가
-    def __init__(self, speaker_embed_dim=256, speaker_embed_std=0.01, use_postnet=True, synthesize=False):
+    def __init__(self, speaker_embed_dim=256, speaker_embed_std=0.01, use_postnet=True):
         super(FastSpeech2, self).__init__()
 
         # !! speaker embedding 추가
-        self.n_speakers, self.speaker_table = get_speakers(synthesize)
+        self.n_speakers, self.speaker_table = get_speakers()
         self.speaker_embed_dim = speaker_embed_dim
         self.speaker_embed_std = speaker_embed_std
 

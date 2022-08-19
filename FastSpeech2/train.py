@@ -2,48 +2,34 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
-import hparams as hp
-import os
 
+import os
 import datetime
 
-os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"]=hp.train_visible_devices
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+from param import user_param
+import hparams
+
+#os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
+#os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
 
 import numpy as np
-import argparse
 import time
 from fastspeech2 import FastSpeech2
 from loss import FastSpeech2Loss
 from dataset import Dataset
 from optimizer import ScheduledOptim
-from evaluate import evaluate
 import utils
-import audio as Audio
 import re
 
 class FS2Train:
-    def __init__(self, args):
+    def __init__(self, hp):
         torch.manual_seed(0)
         # Get device
-        self.args = args
+        self.hp = hp
         self.device = torch.device('cuda'if torch.cuda.is_available()else 'cpu')
 
-        # Optimizer and loss
-        self.optimizer = torch.optim.Adam(self.model.parameters(), betas=hp.betas, eps=hp.eps, weight_decay = hp.weight_decay)
-        self.scheduled_optim = ScheduledOptim(self.optimizer, hp.decoder_hidden, hp.n_warm_up_step, int(re.sub(r'[^0-9]', '', self.args.restore_step)))
-        self.Loss = FastSpeech2Loss().to(self.device) 
-        print("Optimizer and Loss Function Defined.")
-
-    def load_data(self):
-        # Get dataset
-        self.dataset = Dataset("train.txt") 
-        
-        # shuffle=True - 인덱스 랜덤 선별 (batch의 제곱만큼 준비하고 2중 for문)
-        self.loader = DataLoader(self.dataset, batch_size=hp.batch_size**2, shuffle=True, 
-            collate_fn=self.dataset.collate_fn, drop_last=True, num_workers=0)
-
-    def load_model(self):
         # 학습 시 Multi / Single 판단 (Add)
         _, self.speaker_table = utils.get_speakers()
         print('\nSpeaker Count', len(self.speaker_table))
@@ -54,9 +40,25 @@ class FS2Train:
         self.num_param = utils.get_param_num(self.model)
         print('Number of FastSpeech2 Parameters:', self.num_param)
 
+        # Optimizer and loss
+        self.optimizer = torch.optim.Adam(self.model.parameters(), betas=hp.betas, eps=self.hp.eps, weight_decay = self.hp.weight_decay)
+        self.scheduled_optim = ScheduledOptim(self.optimizer, self.hp.decoder_hidden, self.hp.n_warm_up_step, int(re.sub(r'[^0-9]', '', self.hp.restore_step)))
+        self.Loss = FastSpeech2Loss().to(self.device) 
+        print("Optimizer and Loss Function Defined.")
+
+
+    def load_data(self):
+        # Get dataset
+        self.dataset = Dataset(self.hp, "train.txt") 
+        
+        # shuffle=True - 인덱스 랜덤 선별 (batch의 제곱만큼 준비하고 2중 for문)
+        self.loader = DataLoader(self.dataset, batch_size=self.hp.batch_size**2, shuffle=True, 
+            collate_fn=self.dataset.collate_fn, drop_last=True, num_workers=0)
+
+
     def init_log(self):
         # Init logger
-        self.log_path = hp.log_path
+        self.log_path = self.hp.log_path
         if not os.path.exists(self.log_path):
             os.makedirs(self.log_path)
             os.makedirs(os.path.join(self.log_path, 'train'))
@@ -64,15 +66,19 @@ class FS2Train:
         self.train_logger = SummaryWriter(os.path.join(self.log_path, 'train'))
         self.val_logger = SummaryWriter(os.path.join(self.log_path, 'validation'))
 
+
     def train(self):
+        self.load_data()
+        self.init_log()
+
         # Load checkpoint if exists
-        checkpoint_path = os.path.join(hp.checkpoint_path)
+        checkpoint_path = os.path.join(self.hp.checkpoint_path)
         try:
             checkpoint = torch.load(os.path.join(
-                'ckpt', 'checkpoint_{}.pth.tar'.format(self.args.restore_step)))
+                'ckpt', 'checkpoint_{}.pth'.format(self.hp.restore_step)))
             self.model.load_state_dict(checkpoint['model'])
             self.optimizer.load_state_dict(checkpoint['optimizer'])
-            print("\n---Model Restored at Step {}---\n".format(self.args.restore_step))
+            print("\n---Model Restored at Step {}---\n".format(self.hp.restore_step))
         except:
             print("\n---Start New Training---\n")
             if not os.path.exists(checkpoint_path):
@@ -83,9 +89,9 @@ class FS2Train:
         Start = time.perf_counter()
         # Training
         self.model = self.model.train()
-        for epoch in range(hp.epochs):
+        for epoch in range(self.hp.epochs):
             # Get Training Loader
-            total_step = hp.epochs * len(self.loader) * hp.batch_size
+            total_step = self.hp.epochs * len(self.loader) * self.hp.batch_size
 
             # loader를 불러 getitems 함수 수행
             for i, batchs in enumerate(self.loader):
@@ -96,7 +102,7 @@ class FS2Train:
                         continue
 
                     start_time = time.perf_counter()
-                    current_step = i*hp.batch_size + j + int(re.sub(r'[^0-9]', '', self.args.restore_step)) + epoch*len(self.loader)*hp.batch_size + 1
+                    current_step = i*self.hp.batch_size + j + int(re.sub(r'[^0-9]', '', self.hp.restore_step)) + epoch*len(self.loader)*self.hp.batch_size + 1
 
                     # Speaker Embedding을 위한 Embedding ID
                     speaker_ids = []
@@ -145,24 +151,24 @@ class FS2Train:
                         f_e_loss.write(str(e_l)+"\n")
                     
                     # Backward
-                    total_loss = total_loss / hp.acc_steps
+                    total_loss = total_loss / self.hp.acc_steps
                     total_loss.backward()
-                    if current_step % hp.acc_steps != 0:
+                    if current_step % self.hp.acc_steps != 0:
                         continue
 
                     # Clipping gradients to avoid gradient explosion
-                    nn.utils.clip_grad_norm_(self.model.parameters(), hp.grad_clip_thresh)
+                    nn.utils.clip_grad_norm_(self.model.parameters(), self.hp.grad_clip_thresh)
 
                     # Update weights
                     self.scheduled_optim.step_and_update_lr()
                     self.scheduled_optim.zero_grad()
                     
                     # Print
-                    if current_step % hp.log_step == 0:
+                    if current_step % self.hp.log_step == 0:
                         Now = time.perf_counter()
 
                         str1 = "Epoch [{}/{}], Step [{}/{}]:".format(
-                            epoch+1, hp.epochs, current_step, total_step)
+                            epoch+1, self.hp.epochs, current_step, total_step)
                         str2 = "Total Loss: {:.4f}, Mel Loss: {:.4f}, Mel PostNet Loss: {:.4f}, Duration Loss: {:.4f}, F0 Loss: {:.4f}, Energy Loss: {:.4f};".format(
                             t_l, m_l, m_p_l, d_l, f_l, e_l)
                         str3 = "Time Used: {:.3f}s({:.1f}min), Estimated Time Remaining: {:.3f}s.".format(
@@ -185,14 +191,14 @@ class FS2Train:
                     self.train_logger.add_scalar('Loss/F0_loss', f_l, current_step)
                     self.train_logger.add_scalar('Loss/energy_loss', e_l, current_step)
                     
-                    if current_step % hp.save_step == 0:
-                        if not os.path.exists(os.path.join(checkpoint_path, hp.user_id)):
-                            os.mkdir(os.path.join(checkpoint_path, hp.user_id))
-                        if not os.path.exists(os.path.join(checkpoint_path, hp.target_dir)):
-                            os.mkdir(os.path.join(checkpoint_path, hp.target_dir))
+                    if current_step % self.hp.save_step == 0:
+                        if not os.path.exists(os.path.join(checkpoint_path, self.hp.user_id)):
+                            os.mkdir(os.path.join(checkpoint_path, self.hp.user_id))
+                        if not os.path.exists(os.path.join(checkpoint_path, self.hp.target_dir)):
+                            os.mkdir(os.path.join(checkpoint_path, self.hp.target_dir))
 
                         torch.save({'model': self.model.state_dict(), 'optimizer': self.optimizer.state_dict(
-                        )}, os.path.join(checkpoint_path, hp.target_dir, 'checkpoint_{}_{}.pth'.format(hp.dataset, current_step)))
+                        )}, os.path.join(checkpoint_path, self.hp.target_dir, 'checkpoint_{}_{}.pth'.format(self.hp.dataset, current_step)))
                         print("save model at step {} ...".format(current_step))
                         
                         print(datetime.datetime.now() + datetime.timedelta(hours=9))
@@ -200,17 +206,15 @@ class FS2Train:
                         
                     end_time = time.perf_counter()
                     Time = np.append(Time, end_time - start_time)
-                    if len(Time) == hp.clear_Time:
+                    if len(Time) == self.hp.clear_Time:
                         temp_value = np.mean(Time)
                         Time = np.delete(
                             Time, [i for i in range(len(Time))], axis=None)
                         Time = np.append(Time, temp_value)
 
 if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--restore_step', type=str, default='250000')
-    args = parser.parse_args()
-    trainer = FS2Train(args)
+    param = user_param.UserParam('hws0120', 'HW-man')
+    hp = hparams.hparam(param)
+    trainer = FS2Train(hp)
 
     trainer.train()

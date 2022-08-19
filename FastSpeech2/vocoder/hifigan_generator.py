@@ -5,7 +5,9 @@ from torch.nn import Conv1d, ConvTranspose1d
 from torch.nn.utils import weight_norm, remove_weight_norm
 from vocoder.utils import init_weights, get_padding
 
-import hparams as hp
+import hparams
+
+hp = hparams.hparam()
 
 LRELU_SLOPE = 0.1
 

@@ -33,20 +33,14 @@ import warnings
 warnings.filterwarnings(action='ignore')
 
 class HiFiGANTrain:
-    def __init__(self):
-        self.param = user_param.UserParam()
+    def __init__(self, param):
+        self.param = param
 
-    def train(self, rank, a, h):
+    def trainer(self, rank, a, h):
         if h.num_gpus > 1:
             init_process_group(backend=h.dist_config['dist_backend'], init_method=h.dist_config['dist_url'],
                             world_size=h.dist_config['world_size'] * h.num_gpus, rank=rank)
-
-        # dataset 이름 확정하기 위해 dataset 디렉토리 활용 
-        #dataset_name = os.listdir('../dataset')[0]
-        #dataset_name = dataset_name.replace('_', '')
-        dataset_name = self.param.target_dir
         
-
         torch.cuda.manual_seed(h.seed)
         device = torch.device('cuda:{:d}'.format(rank))
 
@@ -244,8 +238,8 @@ class HiFiGANTrain:
                 print('Time taken for epoch {} is {} sec\n'.format(epoch + 1, int(time.time() - start)))
 
 
-    def main(self):
-
+    def train(self):
+        #os.chdir('HiFiGAN')
         if not os.path.exists(os.path.join('dataset/training.txt')):
             make_txt()
 
@@ -253,7 +247,6 @@ class HiFiGANTrain:
 
         parser = argparse.ArgumentParser()
 
-        parser.add_argument('--group_name', default=None)
         parser.add_argument('--input_wavs_dir', default='../{}'.format(self.param.direct_dir))
         parser.add_argument('--input_mels_dir', default='ft_dataset')
         parser.add_argument('--input_training_file', default='dataset/training.txt')
@@ -287,11 +280,13 @@ class HiFiGANTrain:
             pass
 
         if h.num_gpus > 1:
-            mp.spawn(train, nprocs=h.num_gpus, args=(a, h,))
+            mp.spawn(self.trainer, nprocs=h.num_gpus, args=(a, h,))
         else:
-            train(0, a, h)
+            self.trainer(0, a, h)
+        os.system('cd -')
 
 
 if __name__ == '__main__':
-    HiFiGAN_trainer = HiFiGANTrain()
-    HiFiGAN_trainer.main()
+    param = user_param.UserParam('hws0120', 'HW-man')
+    HiFiGAN_trainer = HiFiGANTrain(param)
+    HiFiGAN_trainer.train()

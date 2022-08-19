@@ -7,10 +7,12 @@ import audio.stft as stft
 from audio.audio_processing import griffin_lim
 import hparams
 
+hp = hparams.hparam()
+
 _stft = stft.TacotronSTFT(
-    hparams.filter_length, hparams.hop_length, hparams.win_length,
-    hparams.n_mel_channels, hparams.sampling_rate, hparams.mel_fmin,
-    hparams.mel_fmax)
+    hp.filter_length, hp.hop_length, hp.win_length,
+    hp.n_mel_channels, hp.sampling_rate, hp.mel_fmin,
+    hp.mel_fmax)
 
 
 def load_wav_to_torch(full_path):
@@ -23,7 +25,7 @@ def get_mel(filename):
     if sampling_rate != _stft.sampling_rate:
         raise ValueError("{} {} SR doesn't match target {} SR".format(
             sampling_rate, _stft.sampling_rate))
-    audio_norm = audio / hparams.max_wav_value
+    audio_norm = audio / hp.max_wav_value
     audio_norm = audio_norm.unsqueeze(0)
     audio_norm = torch.autograd.Variable(audio_norm, requires_grad=False)
     melspec, energy = _stft.mel_spectrogram(audio_norm)
@@ -35,11 +37,11 @@ def get_mel(filename):
 
 
 def get_mel_from_wav(audio):
-    sampling_rate = hparams.sampling_rate
+    sampling_rate = hp.sampling_rate
     if sampling_rate != _stft.sampling_rate:
         raise ValueError("{} {} SR doesn't match target {} SR".format(
             sampling_rate, _stft.sampling_rate))
-    audio_norm = audio / hparams.max_wav_value
+    audio_norm = audio / hp.max_wav_value
     audio_norm = audio_norm.unsqueeze(0)
     audio_norm = torch.autograd.Variable(audio_norm, requires_grad=False)
     melspec, energy = _stft.mel_spectrogram(audio_norm)
@@ -65,4 +67,4 @@ def inv_mel_spec(mel, out_filename, griffin_iters=60):
     audio = audio.squeeze()
     audio = audio.cpu().numpy()
     audio_path = out_filename
-    write(audio_path, hparams.sampling_rate, audio)
+    write(audio_path, hp.sampling_rate, audio)

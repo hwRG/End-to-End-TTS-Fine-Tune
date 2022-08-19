@@ -3,8 +3,9 @@ import torch.nn.functional as F
 import numpy as np
 
 from transformer.Modules import ScaledDotProductAttention
-import hparams as hp
+import hparams
 
+hp = hparams.hparam()
 
 class MultiHeadAttention(nn.Module):
     ''' Multi-Head Attention module '''

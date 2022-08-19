@@ -9,7 +9,6 @@ matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 from scipy.io import wavfile
 from vocoder.hifigan_generator import Generator
-import hparams as hp
 import os
 import text
 import json
@@ -19,8 +18,12 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 import matplotlib.font_manager as fm
 
+import hparams
+
+hp = hparams.hparam()
+
 # Speaker list 불러오기 (Add)
-def get_speakers(synthesize=False):
+def get_speakers():
     n_speakers = 1
     speaker_table = {}
     
@@ -52,6 +55,7 @@ class SpeakerIntegrator(nn.Module):
         return x
 
 
+# hp 추가
 def get_alignment(tier):
     sil_phones = ['sil', 'sp', 'spn']
 
@@ -201,11 +205,12 @@ def combine_wav(path, cnt):
 
     # 최종 오디오 파일
     combined_sounds.export(path, format="wav")
-    print(path, 'done')
+    print(path, 'Done')
 
 
 # Synthesize 과정에서 HiFi-GAN을 통한 Mel to Waveform (Add)  
-def hifigan_infer(mel_list, path, synthesize=False):
+def hifigan_infer(mel_list, hparam, path, synthesize=False):
+    hp = hparam
     if torch.cuda.is_available():
         torch.cuda.manual_seed(1234)
         device = torch.device('cuda')
@@ -234,7 +239,7 @@ def hifigan_infer(mel_list, path, synthesize=False):
 
             curPath = path[:-4] + '_' + str(cnt) + path[-4:]
             wavfile.write(curPath, hp.sampling_rate, audio)
-            print(curPath, 'done')
+            #print(curPath, 'done')
 
     combine_wav(path, cnt)
 

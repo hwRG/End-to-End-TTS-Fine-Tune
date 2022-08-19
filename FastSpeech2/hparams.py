@@ -1,118 +1,115 @@
 import os
 
-import sys
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-from param import user_param
+class hparam:
+    def __init__(self, param=None):
+        # async로부터 받은 param
+        self.param = param
 
-param = user_param.UserParam()
+        self.restore_step = '300000'
+        self.synthesize_step = '305000'
 
-data_path = param.data_dir # fine-tune-datset/ID
+        # Default Sampling rate - 22050
+        self.sampling_rate = 22050
 
-target_dir = param.target_dir # ID/Speaker
-direct_dir = param.direct_dir # fine-tune-datset/ID/Speaker
+        if self.param != None:
+            self.base_dir = self.param.base_dir
+            
+            self.data_dir = self.param.data_dir # fine-tune-datset/ID
+            self.target_dir = self.param.target_dir # ID/Speaker
+            self.direct_dir = self.param.direct_dir # fine-tune-datset/ID/Speaker
 
-dataset = param.dataset # Speaker
-user_id = param.user_id # ID
-"""
-# dataset 이름 확인을 위해 dataset 디렉토리 활용 
-dataset = os.listdir('../dataset')[0]
-dataset = dataset.replace('_', '')"""
+            self.dataset = self.param.dataset # Speaker
+            self.user_id = self.param.user_id # ID
 
+            # Vocoder
+            self.vocoder = 'hifigan'
+            self.vocoder_pretrained_model_name = self.dataset + "_g_00610000.pt" # 600000 + 10000
+            self.vocoder_pretrained_model_path = os.path.join("../ckpt/", self.param.target_dir, self.vocoder_pretrained_model_name)
 
-# Vocoder
-vocoder = 'hifigan'
-vocoder_pretrained_model_name = dataset + "_g_00610000.pt" # 600000 + 50000
-vocoder_pretrained_model_path = os.path.join("../ckpt/", param.target_dir, vocoder_pretrained_model_name)
+            self.meta_name = "fine_tune_transcript.txt"
+            self.textgrid_name = self.dataset + "textgrids.zip"
 
+            # Checkpoints and synthesis path
+            self.preprocessed_path = os.path.join("./preprocessed/", self.target_dir)
+            self.checkpoint_path = os.path.join("../ckpt/")
+            self.eval_path = os.path.join("./eval/", self.target_dir)
+            self.log_path = os.path.join("./log/", self.target_dir)
+            self.test_path = os.path.join("../results/", self.target_dir)
 
-data_path = os.path.join(param.direct_dir)
-meta_name = "fine_tune_transcript.txt"
-textgrid_name = dataset + "textgrids.zip"
+        ### set GPU number ###
+        self.train_visible_devices = "0,1"
+        self.synth_visible_devices = "1"
 
-# Default Sampling rate - 22050
-sampling_rate = param.sampling_rate
-
-# Checkpoints and synthesis path
-preprocessed_path = os.path.join("./preprocessed/", target_dir)
-checkpoint_path = os.path.join("../ckpt/")
-eval_path = os.path.join("./eval/", target_dir)
-log_path = os.path.join("./log/", target_dir)
-test_path = os.path.join("../results/", target_dir)
-
-### set GPU number ###
-train_visible_devices = "0,1"
-synth_visible_devices = "1"
-
-# Text
-text_cleaners = ['korean_cleaners']
+        # Text
+        self.text_cleaners = ['korean_cleaners']
 
 
-# Audio and mel
-filter_length = 1024
-hop_length = 256
-win_length = 1024
+        # Audio and mel
+        self.filter_length = 1024
+        self.hop_length = 256
+        self.win_length = 1024
 
-max_wav_value = 32768.0
-n_mel_channels = 80
-mel_fmin = 0
-mel_fmax = 8000
+        self.max_wav_value = 32768.0
+        self.n_mel_channels = 80
+        self.mel_fmin = 0
+        self.mel_fmax = 8000
 
-f0_min = 71.0
-f0_max = 792.8
-energy_min = 0.0
-energy_max = 283.72
+        self.f0_min = 71.0
+        self.f0_max = 792.8
+        self.energy_min = 0.0
+        self.energy_max = 283.72
 
 
-# FastSpeech 2
-encoder_layer = 4
-encoder_head = 2
-encoder_hidden = 256
-decoder_layer = 4
-decoder_head = 2
-decoder_hidden = 256
-fft_conv1d_filter_size = 1024
-fft_conv1d_kernel_size = (9, 1)
-encoder_dropout = 0.2
-decoder_dropout = 0.2
+        # FastSpeech 2
+        self.encoder_layer = 4
+        self.encoder_head = 2
+        self.encoder_hidden = 256
+        self.decoder_layer = 4
+        self.decoder_head = 2
+        self.decoder_hidden = 256
+        self.fft_conv1d_filter_size = 1024
+        self.fft_conv1d_kernel_size = (9, 1)
+        self.encoder_dropout = 0.2
+        self.decoder_dropout = 0.2
 
-variance_predictor_filter_size = 256
-variance_predictor_kernel_size = 3
-variance_predictor_dropout = 0.5
+        self.variance_predictor_filter_size = 256
+        self.variance_predictor_kernel_size = 3
+        self.variance_predictor_dropout = 0.5
 
-max_seq_len = 1000
+        self.max_seq_len = 1000
 
 
 
-# Optimizer
-batch_size = 8
-epochs = 760 # 5000 step
-n_warm_up_step = 4000
-grad_clip_thresh = 1.0
-acc_steps = 1
+        # Optimizer
+        self.batch_size = 8
+        self.epochs = 760 # 5000 step
+        self.n_warm_up_step = 4000
+        self.grad_clip_thresh = 1.0
+        self.acc_steps = 1
 
-betas = (0.9, 0.98)
-eps = 1e-9
-weight_decay = 0.
+        self.betas = (0.9, 0.98)
+        self.eps = 1e-9
+        self.weight_decay = 0.
 
 
-# HiFi-GAN parameter
-resblock_kernel_sizes = [3,7,11]
-upsample_rates = [8,8,2,2]
-resblock = "1"
-upsample_rates = [8,8,2,2]
-upsample_kernel_sizes = [16,16,4,4]
-upsample_initial_channel = 512
-resblock_kernel_sizes = [3,7,11]
-resblock_dilation_sizes = [[1,3,5], [1,3,5], [1,3,5]]
+        # HiFi-GAN parameter
+        self.resblock_kernel_sizes = [3,7,11]
+        self.upsample_rates = [8,8,2,2]
+        self.resblock = "1"
+        self.upsample_rates = [8,8,2,2]
+        self.upsample_kernel_sizes = [16,16,4,4]
+        self.upsample_initial_channel = 512
+        self.resblock_kernel_sizes = [3,7,11]
+        self.resblock_dilation_sizes = [[1,3,5], [1,3,5], [1,3,5]]
 
-# Log-scaled duration
-log_offset = 1.
+        # Log-scaled duration
+        self.log_offset = 1.
 
-# Save, log and synthesis
-save_step = 5000
-eval_step = 10000
-eval_size = 256
-log_step = 1000
-clear_Time = 20
+        # Save, log and synthesis
+        self.save_step = 5000
+        self.eval_step = 10000
+        self.eval_size = 256
+        self.log_step = 1000
+        self.clear_Time = 20
 
 

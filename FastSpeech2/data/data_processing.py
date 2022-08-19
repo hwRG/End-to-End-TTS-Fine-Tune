@@ -6,7 +6,6 @@ import pyworld as pw
 import torch
 import audio as Audio
 from utils import get_alignment, standard_norm, remove_outlier, average_by_duration
-import hparams as hp
 from jamo import h2j
 import codecs
 import random
@@ -26,7 +25,7 @@ def prepare_align(in_dir, meta):
             with open(os.path.join(in_dir,'wavs',basename),'w') as f1:
                 f1.write(text)
 
-def build_from_path(in_dir, out_dir, meta):
+def build_from_path(in_dir, out_dir, meta, hp):
     train, val = list(), list()
 
     # processed 데이터에 대한 standard scaler 준비
@@ -54,7 +53,7 @@ def build_from_path(in_dir, out_dir, meta):
                 continue
             
             ## preprocessed 데이터 추출 함수 / ret은 파일 위치 및 텍스트 + mel-spectrogram
-            ret = process_utterance(in_dir, out_dir, parts[0], scalers)
+            ret = process_utterance(in_dir, out_dir, parts[0], scalers, hp)
             
             # f0가 0인 상황과 Textgrid가 누락된 상황에 학습 데이터로 추가하지 않음
             if ret is None or ret is False:
@@ -85,7 +84,7 @@ def build_from_path(in_dir, out_dir, meta):
     return [r for r in train if r is not None], [r for r in val if r is not None]
 
 
-def process_utterance(in_dir, out_dir, filename, scalers):
+def process_utterance(in_dir, out_dir, filename, scalers, hp):
 
     wav_path = os.path.join('../', hp.direct_dir, '{}.wav'.format(filename[:-4]))
     

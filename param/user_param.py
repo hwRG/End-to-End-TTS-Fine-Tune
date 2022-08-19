@@ -1,9 +1,11 @@
 class UserParam:
-    def __init__(user_id, dataset):
-        base_dir = 'fine-tune-dataset/'
+    def __init__(self, user_id, dataset):
+        self.base_dir = 'fine-tune-dataset/'
+        self.user_id = user_id + '/'
+        self.dataset = dataset
 
-        data_dir = base_dir + user_id
-        target_dir = user_id + dataset
-        direct_dir = data_dir + dataset
+        self.data_dir = self.base_dir + self.user_id
+        self.target_dir = self.user_id + self.dataset
+        self.direct_dir = self.data_dir + self.dataset
 
-        sampling_rate = 22050
+        self.sampling_rate = 22050

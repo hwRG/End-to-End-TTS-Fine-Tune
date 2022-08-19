@@ -2,12 +2,17 @@ from jamo import h2j
 import json
 import os, re
 import unicodedata
-import hparams as hp
+
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+from param import user_param
+import hparams
 
 class DataPreprocessing:
-    def __init__(self):
-        self.name = hp.dataset
-        self.transcript = hp.meta_name
+    def __init__(self, hp):
+        self.hp = hp
+        self.name = self.hp.dataset
+        self.transcript = self.hp.meta_name
         self.dict_name = self.name + '_korean_dict.txt'
 
     def line_replace(line):
@@ -92,8 +97,8 @@ class DataPreprocessing:
         os.system('mfa train . ' + self.name + '_korean.txt ./textgrids --clean')
         
         os.system('mv ~/Documents/MFA/wavs_train_acoustic_model/sat_2_ali/textgrids ./')
-        #os.system('zip -r {}_textgrids.zip textgrids'.format(hp.dataset))
-        #os.system('mv {}_textgrids.zip '.format(hp.dataset) + first_dir) # 압축 후 최상위 디렉토리에 zip 파일로 생성
+        #os.system('zip -r {}_textgrids.zip textgrids'.format(self.hp.dataset))
+        #os.system('mv {}_textgrids.zip '.format(self.hp.dataset) + first_dir) # 압축 후 최상위 디렉토리에 zip 파일로 생성
         print("MFA Training Done! \n")
         
 
@@ -106,9 +111,9 @@ class DataPreprocessing:
     # RUN
     def data_preprocess(self):
         # 0) 데이터 경로로 이동
-        os.chdir('../{}'.format(hp.data_path))
+        os.chdir('../{}'.format(self.hp.direct_dir))
         # API로 활용 시
-        # os.system('cd End-to-End-TTS-Fine-Tune/{}'.format(hp.data_path))
+        # os.system('cd End-to-End-TTS-Fine-Tune/{}'.format(self.hp.data_dir))
 
         # 1) mfa를 위해 데이터마다 lab 파일 생성
         self.aligner()
@@ -123,5 +128,7 @@ class DataPreprocessing:
         os.system('cd -')
 
 if __name__ == "__main__":
-    processor = DataPreprocessing()  
+    param = user_param.UserParam('hws0120', 'HW-man')
+    hp = hparams.hparam(param)
+    processor = DataPreprocessing(hp)  
     processor.data_preprocess()

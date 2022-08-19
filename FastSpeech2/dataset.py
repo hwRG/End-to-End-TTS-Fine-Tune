@@ -6,7 +6,6 @@ import math
 import os
 import sys # 추가 항목
 
-import hparams as hp
 import audio as Audio
 from utils import pad_1D, pad_2D, process_meta, standard_norm
 from text import text_to_sequence, sequence_to_text
@@ -16,12 +15,13 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 class Dataset(Dataset):
-    def __init__(self, filename="train.txt", sort=True):
-        self.basename, self.text = process_meta(os.path.join(hp.preprocessed_path, filename))
+    def __init__(self, hp, filename="train.txt", sort=True):
+        self.hp = hp
+        self.basename, self.text = process_meta(os.path.join(self.hp.preprocessed_path, filename))
         
-        self.mean_mel, self.std_mel = np.load(os.path.join(hp.preprocessed_path, "mel_stat.npy"))
-        self.mean_f0, self.std_f0 = np.load(os.path.join(hp.preprocessed_path, "f0_stat.npy"))
-        self.mean_energy, self.std_energy = np.load(os.path.join(hp.preprocessed_path, "energy_stat.npy"))
+        self.mean_mel, self.std_mel = np.load(os.path.join(self.hp.preprocessed_path, "mel_stat.npy"))
+        self.mean_f0, self.std_f0 = np.load(os.path.join(self.hp.preprocessed_path, "f0_stat.npy"))
+        self.mean_energy, self.std_energy = np.load(os.path.join(self.hp.preprocessed_path, "energy_stat.npy"))
 
         self.sort = sort
 
@@ -35,21 +35,21 @@ class Dataset(Dataset):
         phone = np.array(text_to_sequence(t, []))
         
         mel_path = os.path.join(
-            hp.preprocessed_path, "mel", "{}-mel-{}.npy".format(hp.dataset, self.basename[idx]))
+            self.hp.preprocessed_path, "mel", "{}-mel-{}.npy".format(self.hp.dataset, self.basename[idx]))
         mel_target = np.load(mel_path)
         D_path = os.path.join(
-            hp.preprocessed_path, "alignment", "{}-ali-{}.npy".format(hp.dataset, self.basename[idx]))
+            self.hp.preprocessed_path, "alignment", "{}-ali-{}.npy".format(self.hp.dataset, self.basename[idx]))
         D = np.load(D_path)
         f0_path = os.path.join(
-            hp.preprocessed_path, "f0", "{}-f0-{}.npy".format(hp.dataset, self.basename[idx]))
+            self.hp.preprocessed_path, "f0", "{}-f0-{}.npy".format(self.hp.dataset, self.basename[idx]))
         f0 = np.load(f0_path)
         energy_path = os.path.join(
-            hp.preprocessed_path, "energy", "{}-energy-{}.npy".format(hp.dataset, self.basename[idx]))
+            self.hp.preprocessed_path, "energy", "{}-energy-{}.npy".format(self.hp.dataset, self.basename[idx]))
         energy = np.load(energy_path)
         
         # id는 Speaker ID
         sample = {"id": 'single',  
-                  "name": hp.dataset,
+                  "name": self.hp.dataset,
                   "text": phone,
                   "mel_target": mel_target,
                   "D": D,
@@ -90,7 +90,7 @@ class Dataset(Dataset):
         mel_targets = pad_2D(mel_targets)
         f0s = pad_1D(f0s)
         energies = pad_1D(energies)
-        log_Ds = np.log(Ds + hp.log_offset)
+        log_Ds = np.log(Ds + self.hp.log_offset)
 
         out = {"id": ids,
                "name": names,
@@ -129,7 +129,7 @@ if __name__ == "__main__":
     dataset = Dataset('val.txt')
     training_loader = DataLoader(dataset, batch_size=1, shuffle=False, collate_fn=dataset.collate_fn,
         drop_last=True, num_workers=0)
-    total_step = hp.epochs * len(training_loader) * hp.batch_size
+    total_step = 10000 * len(training_loader) * 8
 
     cnt = 0
     for i, batchs in enumerate(training_loader):
