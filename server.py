@@ -1,61 +1,60 @@
-from dto.TTS_dto import TTSTrainDto, TTSInferenceDto
+from dto import TTS_Dto
 
-from FastSpeech2 import train as FS2train
-from FastSpeech2 import hparams, data_preprocessing
-from FastSpeech2 import s3_target_wav_load
+from FastSpeech2 import hparams, FS2_e2e_train
 from HiFiGAN import train as HGtrain
 from param import user_param
 
 from FastSpeech2 import synthesize
 
-import os
 import uvicorn
 
+import requests
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 app = FastAPI()
 
 @app.get("/tts/train")
-async def tts_train(target_inf: TTSTrainDto):
-    # param을 설정하고 hparam에 통째로 넘겨줌 그리고 그 hp를 함수에서 계속활용
+async def tts_train(target_inf: TTS_Dto.TTSTrainDto):
+    # param을 설정하고 hparam에 통째로 넘겨 hp 활용
     param = user_param.UserParam(target_inf.caregiver_id, target_inf.voice_target)
     hp = hparams.hparam(param)
 
-    s3_loader = s3_target_wav_load.S3TargetLoader(hp)
-    s3_loader.s3_target_load()
-
-    # 가상 환경에서 aligner 수행
-    os.system('. /opt/conda/etc/profile.d/conda.sh')
-    os.system('conda activate aligner')
-    Processor = data_preprocessing.DataPreprocessing(hp)
-    Processor.data_preprocess()
-    os.system('conda activate base')
-
-    FS2_trainer = FS2train.FS2Train(hp)
-    FS2_trainer.train()
+    # async로 별도의 thread로 이벤트 train
+    # response
+    #FS2_trainer = FS2_e2e_train.FS2Train(hp)
+    #FS2_trainer.E2E_FS2_train() # async 적용
 
     HG_trainer = HGtrain.HiFiGANTrain(param)
-    HG_trainer.train()
+    HG_trainer.train()          # async 적용, 학습 종료 시 request
 
     return {"response": "Fine-tune train Complete!"} 
 
 
 @app.get("/tts/inference")
-async def tts_inference(target_text: TTSInferenceDto):
+async def tts_inference(target_text: TTS_Dto.TTSInferenceDto):
+
     param = user_param.UserParam(target_text.caregiver_id, target_text.voice_target)
     hp = hparams.hparam(param)
     
     synthesizer = synthesize.Synthesizer(hp)
     wav_path = synthesizer.synthesize(target_text.msg)
 
-    # wav 파일 경로를 받아 backend로 전달하면 될 듯
-    return wav_path
+    # wav 파일을 backend로 전달 (response)
+    return FileResponse(wav_path)
 
-    
+"""@app.post("/files/")
+async def create_file(file: bytes = File()):
+    return {"file_size": len(file)}
+
+
+@app.post("/uploadfile/")
+async def create_upload_file(file: UploadFile):
+    return {"filename": file.filename}"""
 
 if __name__ == "__main__":
     uvicorn.run(
-        "main:app",
-        port=8000,
+        "server:app",
+        port=24850,
         host="0.0.0.0",
         reload=True
     )

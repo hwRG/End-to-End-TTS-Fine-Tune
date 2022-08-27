@@ -8,9 +8,9 @@ matplotlib.use("Agg")
 
 from matplotlib import pyplot as plt
 from scipy.io import wavfile
-from vocoder.hifigan_generator import Generator
+from .vocoder.hifigan_generator import Generator
 import os
-import text
+from . import text
 import json
 from pydub import AudioSegment
 
@@ -18,7 +18,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 import matplotlib.font_manager as fm
 
-import hparams
+from . import hparams
 
 hp = hparams.hparam()
 
@@ -28,7 +28,7 @@ def get_speakers():
     speaker_table = {}
     
     # 참고할 table이 있는지 확인 / 있으면 읽어오고 없으면 본인만 지정  
-    with open('speaker_info.json', 'r') as f:
+    with open('FastSpeech2/speaker_info.json', 'r') as f:
         pre_speakers = json.load(f)
     speaker_table = pre_speakers['speaker_table']
 
@@ -218,6 +218,7 @@ def hifigan_infer(mel_list, hparam, path, synthesize=False):
         device = torch.device('cpu')
 
     generator = Generator().to(device)
+    print(hp.vocoder_pretrained_model_path)
     state_dict_g = load_checkpoint(hp.vocoder_pretrained_model_path, device)
     generator.load_state_dict(state_dict_g['generator'], strict=False)
 

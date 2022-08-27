@@ -6,7 +6,7 @@ import unicodedata
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from param import user_param
-import hparams
+from . import hparams
 
 class DataPreprocessing:
     def __init__(self, hp):
@@ -97,8 +97,6 @@ class DataPreprocessing:
         os.system('mfa train . ' + self.name + '_korean.txt ./textgrids --clean')
         
         os.system('mv ~/Documents/MFA/wavs_train_acoustic_model/sat_2_ali/textgrids ./')
-        #os.system('zip -r {}_textgrids.zip textgrids'.format(self.hp.dataset))
-        #os.system('mv {}_textgrids.zip '.format(self.hp.dataset) + first_dir) # 압축 후 최상위 디렉토리에 zip 파일로 생성
         print("MFA Training Done! \n")
         
 
@@ -111,10 +109,10 @@ class DataPreprocessing:
     # RUN
     def data_preprocess(self):
         # 0) 데이터 경로로 이동
-        os.chdir('../{}'.format(self.hp.direct_dir))
+        #os.chdir(self.hp.direct_dir)
         # API로 활용 시
-        # os.system('cd End-to-End-TTS-Fine-Tune/{}'.format(self.hp.data_dir))
-
+        os.chdir(self.hp.direct_dir)
+        
         # 1) mfa를 위해 데이터마다 lab 파일 생성
         self.aligner()
 
@@ -125,7 +123,9 @@ class DataPreprocessing:
         self.lab_separate()
 
         # 4) 기존 경로로 이동
-        os.system('cd -')
+        os.chdir('..')
+        os.chdir('..')
+        os.chdir('..')
 
 if __name__ == "__main__":
     param = user_param.UserParam('hws0120', 'HW-man')

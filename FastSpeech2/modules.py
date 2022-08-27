@@ -7,9 +7,9 @@ import numpy as np
 import copy
 import math
 
-import utils
+from . import utils
 
-import hparams
+from . import hparams
 
 hp = hparams.hparam()
 

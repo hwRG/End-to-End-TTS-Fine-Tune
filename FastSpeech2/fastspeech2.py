@@ -2,11 +2,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from transformer.Models import Encoder, Decoder
-from transformer.Layers import PostNet
-from modules import VarianceAdaptor
-from utils import get_mask_from_lengths, Embedding, SpeakerIntegrator, get_speakers
-import hparams
+from .transformer import Models 
+from .transformer import Layers
+from .modules import VarianceAdaptor
+from .utils import get_mask_from_lengths, Embedding, SpeakerIntegrator, get_speakers
+from . import hparams
 
 hp = hparams.hparam()
 
@@ -23,8 +23,8 @@ class FastSpeech2(nn.Module):
         self.n_speakers, self.speaker_table = get_speakers()
         self.speaker_embed_dim = speaker_embed_dim
         self.speaker_embed_std = speaker_embed_std
-
-        # Single-Speaker 경우 임베딩 없이 학습 / Multi-Speaker 경우 임베딩 적용 학습
+        self.single = True
+        """# Single-Speaker 경우 임베딩 없이 학습 / Multi-Speaker 경우 임베딩 적용 학습
         if len(self.speaker_table) == 1:
             self.single = True
             print('Base: Single Speaker')
@@ -37,25 +37,25 @@ class FastSpeech2(nn.Module):
             # Multi-Speaker (or Pre-train)
             else:
                 self.single = False
-                print('Base: Multi Speaker')
+                print('Base: Multi Speaker')"""
         
         # Speaker Embedding layer 정의
         self.speaker_embeds = Embedding(len(self.speaker_table), speaker_embed_dim, padding_idx=0, std=speaker_embed_std)
 
-        self.encoder = Encoder()
+        self.encoder = Models.Encoder()
 
         # Embedding 결과물과 Encoder 통합
         self.speaker_integrator = SpeakerIntegrator()
 
         self.variance_adaptor = VarianceAdaptor()
 
-        self.decoder = Decoder()
+        self.decoder = Models.Decoder()
 
         self.mel_linear = nn.Linear(hp.decoder_hidden, hp.n_mel_channels)
         
         self.use_postnet = use_postnet
         if self.use_postnet:
-            self.postnet = PostNet()
+            self.postnet = Layers.PostNet()
 
 
     def forward(self, src_seq, src_len, speaker_ids=None, mel_len=None, d_target=None, p_target=None, e_target=None, max_src_len=None, max_mel_len=None, synthesize=False):
@@ -81,7 +81,7 @@ class FastSpeech2(nn.Module):
             """
 
         # Multi Spekaer (Pre-train)
-        else: 
+        """else: 
             speaker_ids_dict = []
             
             # Dictionary에서 ID에 따라 임베딩 값 찾아 리스트에 추가 
@@ -94,7 +94,7 @@ class FastSpeech2(nn.Module):
             speaker_embed = self.speaker_embeds(speaker_ids_dict)
             encoder_output = self.encoder(src_seq, src_mask)
             # Encoder output과 Embedding output 더함
-            encoder_output = self.speaker_integrator(encoder_output, speaker_embed)
+            encoder_output = self.speaker_integrator(encoder_output, speaker_embed)"""
 
         if d_target is not None:
             variance_adaptor_output, d_prediction, p_prediction, e_prediction, _, _ = self.variance_adaptor(

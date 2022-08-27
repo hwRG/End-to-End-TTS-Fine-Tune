@@ -16,11 +16,11 @@ try:
 except LookupError:
     nltk.download('cmudict')
 
-from g2pk.special import jyeo, ye, consonant_ui, josa_ui, vowel_ui, jamo, rieulgiyeok, rieulbieub, verb_nieun, balb, palatalize, modifying_rieul
-from g2pk.regular import link1, link2, link3, link4
-from g2pk.utils import annotate, compose, group, gloss, parse_table, get_rule_id2text
-from g2pk.english import convert_eng
-from g2pk.numerals import convert_num
+from .special import jyeo, ye, consonant_ui, josa_ui, vowel_ui, jamo, rieulgiyeok, rieulbieub, verb_nieun, balb, palatalize, modifying_rieul
+from .regular import link1, link2, link3, link4
+from .utils import annotate, compose, group, gloss, parse_table, get_rule_id2text
+from .english import convert_eng
+from .numerals import convert_num
 
 
 class G2p(object):

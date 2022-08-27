@@ -4,7 +4,7 @@ import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from param import user_param
-import hparams
+from . import hparams
 
 
 from pydub import AudioSegment
@@ -23,6 +23,7 @@ class S3TargetLoader:
         self.aws_access_id = os.environ.get("access_id")
         self.aws_secret_key = os.environ.get("secret_access_key")
         self.aws_bucket_name = os.environ.get("bucket_name")
+
 
     def load_from_s3(self):
         # set aws credentials 
@@ -57,6 +58,7 @@ class S3TargetLoader:
 
         os.system('rm -rf {}'.format(self.hp.direct_dir))
 
+
     def down_sampling(self):
         if not os.path.exists(self.hp.direct_dir):
             os.mkdir(self.hp.direct_dir)
@@ -72,10 +74,8 @@ class S3TargetLoader:
         
         os.system('rm -rf {}'.format(self.target_path_origin))
 
-    def s3_target_load(self):
-        # 최상위 디렉토리에서 실행할 경우 chdir 주석처리
-        os.chdir('..')
 
+    def s3_target_load(self):
         self.load_from_s3()
 
         files = os.listdir(self.hp.direct_dir)
@@ -83,6 +83,7 @@ class S3TargetLoader:
             self.m4a_to_wav()
 
         self.down_sampling()
+
 
 if __name__ == '__main__':
     param = user_param.UserParam('hws0120', 'HW-man')

@@ -4,7 +4,7 @@ from torch.nn import functional as F
 import numpy as np
 from collections import OrderedDict
 
-from transformer.SubLayers import MultiHeadAttention, PositionwiseFeedForward
+from .SubLayers import MultiHeadAttention, PositionwiseFeedForward
 
 
 class FFTBlock(torch.nn.Module):

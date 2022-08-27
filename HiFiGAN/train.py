@@ -6,6 +6,8 @@ import os
 import time
 import argparse
 import json
+import requests
+
 import torch
 import torch.nn.functional as F
 from torch.utils.tensorboard import SummaryWriter
@@ -13,15 +15,13 @@ from torch.utils.data import DistributedSampler, DataLoader
 import torch.multiprocessing as mp
 from torch.distributed import init_process_group
 from torch.nn.parallel import DistributedDataParallel
-from env import AttrDict, build_env
-from meldataset import MelDataset, mel_spectrogram, get_dataset_filelist
-from models import Generator, MultiPeriodDiscriminator, MultiScaleDiscriminator, feature_loss, generator_loss,\
+from .env import AttrDict, build_env
+from .meldataset import MelDataset, mel_spectrogram, get_dataset_filelist
+from .models import Generator, MultiPeriodDiscriminator, MultiScaleDiscriminator, feature_loss, generator_loss,\
     discriminator_loss
-from utils import plot_spectrogram, scan_checkpoint, load_checkpoint, save_checkpoint
+from .utils import plot_spectrogram, scan_checkpoint, load_checkpoint, save_checkpoint
 
-from transcript_to_txt import make_txt
-
-import glob
+from .transcript_to_txt import make_txt
 
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
@@ -234,16 +234,15 @@ class HiFiGANTrain:
             scheduler_g.step()
             scheduler_d.step()
             
-            if rank == 0:
-                print('Time taken for epoch {} is {} sec\n'.format(epoch + 1, int(time.time() - start)))
+            #if rank == 0:
+            #    print('Time taken for epoch {} is {} sec\n'.format(epoch + 1, int(time.time() - start)))
 
 
     def train(self):
-        #os.chdir('HiFiGAN')
-        if not os.path.exists(os.path.join('dataset/training.txt')):
-            make_txt()
+        #if not os.path.exists(os.path.join('HiFiGAN/dataset/training.txt')):
+        #    make_txt()
 
-        print('Initializing Training Process..')
+        #print('Initializing Training Process..')
 
         parser = argparse.ArgumentParser()
 
@@ -254,7 +253,7 @@ class HiFiGANTrain:
         parser.add_argument('--checkpoint_path', default='ckpt')
         parser.add_argument('--out_checkpoint_path', default='../ckpt')
         parser.add_argument('--config', default='config_v1.json') # v1
-        parser.add_argument('--training_epochs', default=525, type=int)
+        parser.add_argument('--training_epochs', default=1300, type=int)
         parser.add_argument('--stdout_interval', default=100, type=int)
         parser.add_argument('--checkpoint_interval', default=10000, type=int)
         parser.add_argument('--summary_interval', default=100, type=int)
@@ -283,7 +282,13 @@ class HiFiGANTrain:
             mp.spawn(self.trainer, nprocs=h.num_gpus, args=(a, h,))
         else:
             self.trainer(0, a, h)
-        os.system('cd -')
+
+        train_result = {
+            'train_result': 'True'
+        }
+        
+        response = requests.post(self.param.response_url, data=train_result, headers=self.param.headers, cookies=self.param.self.cookies)
+
 
 
 if __name__ == '__main__':

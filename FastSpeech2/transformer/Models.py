@@ -2,11 +2,11 @@ import torch
 import torch.nn as nn
 import numpy as np
 
-import transformer.Constants as Constants
-from transformer.Layers import FFTBlock
-from text.symbols import symbols
+from .Constants import *
+from .Layers import FFTBlock
+from ..text.symbols import symbols
 
-import hparams
+from .. import hparams
 
 hp = hparams.hparam()
 
@@ -51,7 +51,7 @@ class Encoder(nn.Module):
 
         n_position = len_max_seq + 1
 
-        self.src_word_emb = nn.Embedding(n_src_vocab, d_word_vec, padding_idx=Constants.PAD)
+        self.src_word_emb = nn.Embedding(n_src_vocab, d_word_vec, padding_idx=PAD)
         self.position_enc = nn.Parameter(
             get_sinusoid_encoding_table(n_position, d_word_vec).unsqueeze(0), requires_grad=False)
 

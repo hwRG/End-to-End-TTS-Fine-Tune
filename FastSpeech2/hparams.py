@@ -21,20 +21,21 @@ class hparam:
             self.dataset = self.param.dataset # Speaker
             self.user_id = self.param.user_id # ID
 
+            # Checkpoints and synthesis path
+            self.preprocessed_path = os.path.join("./preprocessed/", self.target_dir)
+            self.checkpoint_path = os.path.join("./ckpt/")
+            self.eval_path = os.path.join("./eval/", self.target_dir)
+            self.log_path = os.path.join("./log/", self.target_dir)
+            self.test_path = os.path.join("./results/", self.target_dir)
+
             # Vocoder
             self.vocoder = 'hifigan'
             self.vocoder_pretrained_model_name = self.dataset + "_g_00610000.pt" # 600000 + 10000
-            self.vocoder_pretrained_model_path = os.path.join("../ckpt/", self.param.target_dir, self.vocoder_pretrained_model_name)
+            self.vocoder_pretrained_model_path = os.path.join(self.checkpoint_path, self.param.target_dir, self.vocoder_pretrained_model_name)
 
             self.meta_name = "fine_tune_transcript.txt"
             self.textgrid_name = self.dataset + "textgrids.zip"
 
-            # Checkpoints and synthesis path
-            self.preprocessed_path = os.path.join("./preprocessed/", self.target_dir)
-            self.checkpoint_path = os.path.join("../ckpt/")
-            self.eval_path = os.path.join("./eval/", self.target_dir)
-            self.log_path = os.path.join("./log/", self.target_dir)
-            self.test_path = os.path.join("../results/", self.target_dir)
 
         ### set GPU number ###
         self.train_visible_devices = "0,1"
@@ -82,7 +83,7 @@ class hparam:
 
         # Optimizer
         self.batch_size = 8
-        self.epochs = 760 # 5000 step
+        self.epochs = 630 # 5000 step
         self.n_warm_up_step = 4000
         self.grad_clip_thresh = 1.0
         self.acc_steps = 1

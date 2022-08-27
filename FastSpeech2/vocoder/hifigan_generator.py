@@ -3,9 +3,9 @@ import torch.nn.functional as F
 import torch.nn as nn
 from torch.nn import Conv1d, ConvTranspose1d
 from torch.nn.utils import weight_norm, remove_weight_norm
-from vocoder.utils import init_weights, get_padding
+from ..vocoder.utils import init_weights, get_padding
 
-import hparams
+from .. import hparams
 
 hp = hparams.hparam()
 

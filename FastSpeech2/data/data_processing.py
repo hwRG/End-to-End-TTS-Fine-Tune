@@ -1,18 +1,15 @@
 import numpy as np
 import os
+import random
 import tgt
 from scipy.io.wavfile import read
 import pyworld as pw
 import torch
-import audio as Audio
-from utils import get_alignment, standard_norm, remove_outlier, average_by_duration
-from jamo import h2j
-import codecs
-import random
-import tqdm
-import scipy.io as sio
-
 from sklearn.preprocessing import StandardScaler
+
+from .. import audio as Audio
+from ..utils import get_alignment, average_by_duration
+
 
 def prepare_align(in_dir, meta):
     with open(os.path.join(in_dir, meta), encoding='utf-8') as f:
@@ -31,12 +28,8 @@ def build_from_path(in_dir, out_dir, meta, hp):
     # processed 데이터에 대한 standard scaler 준비
     scalers = [StandardScaler(copy=False) for _ in range(3)]	# scalers for mel, f0, energy
     n_frames = 0
-    print()
-    print()
-    print(os.path.join(in_dir, '../' + meta))
-    print()
-    print()
-    with open(os.path.join('../', in_dir, '../../' + meta), encoding='utf-8') as f:
+    print(os.getcwd())
+    with open(os.path.join(in_dir, '../../' + meta), encoding='utf-8') as f:
         for index, line in enumerate(f):
             parts = line.strip().split('|')
             # basename은 100063/12229.wav 형식
@@ -45,7 +38,6 @@ def build_from_path(in_dir, out_dir, meta, hp):
             if len(parts) < 5: # transcript 형식 오류 적발
                 print('Bad Trascript Processed')
                 continue
-            text = parts[3]
 
             # Alignment로 Preprocessing check
             preCheck = out_dir + '/mel/{}-mel-{}.npy'.format(hp.dataset, parts[0][:-4])
@@ -75,18 +67,19 @@ def build_from_path(in_dir, out_dir, meta, hp):
             n_frames += n
             
     # 각 데이터마다 마련한 scaler로 param_list 생성
-    param_list = [np.array([scaler.mean_, scaler.scale_]) for scaler in scalers]
-    param_name_list = ['mel_stat.npy', 'f0_stat.npy', 'energy_stat.npy']
-    
-    # 각 Scaler 값들을 stat들로 두어 학습과 추론 시 활용 
-    [np.save(os.path.join(out_dir, param_name), param_list[idx]) for idx, param_name in enumerate(param_name_list)]
+    if not os.path.isfile(out_dir + '/mel_stat.npy'): 
+        param_list = [np.array([scaler.mean_, scaler.scale_]) for scaler in scalers]
+        param_name_list = ['mel_stat.npy', 'f0_stat.npy', 'energy_stat.npy']
+        
+        # 각 Scaler 값들을 stat들로 두어 학습과 추론 시 활용 
+        [np.save(os.path.join(out_dir, param_name), param_list[idx]) for idx, param_name in enumerate(param_name_list)]
 
     return [r for r in train if r is not None], [r for r in val if r is not None]
 
 
 def process_utterance(in_dir, out_dir, filename, scalers, hp):
 
-    wav_path = os.path.join('../', hp.direct_dir, '{}.wav'.format(filename[:-4]))
+    wav_path = os.path.join(hp.direct_dir, '{}.wav'.format(filename[:-4]))
     
     # Textgrid 디렉토리 설정
     tg_path = os.path.join(out_dir, 'textgrids', '{}.TextGrid'.format(filename[:-4])) 

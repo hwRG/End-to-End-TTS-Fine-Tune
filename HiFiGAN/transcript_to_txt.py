@@ -2,7 +2,7 @@ import random
 import os
 import glob
 
-transcript = glob.glob('dataset/*.txt')
+transcript = glob.glob('.dataset/*.txt')
 
 def line_replace(line):
     line = line.replace('(SP:)', '')
@@ -31,7 +31,7 @@ def line_replace(line):
     return line
 
 def make_txt():
-    os.chdir('dataset')
+    os.chdir('HiFiGAN/dataset')
     transcript = glob.glob('*.txt')
     transcript = transcript[0]
 
@@ -56,7 +56,7 @@ def make_txt():
     train, val = list(), list()
 
     for line in train_val:
-        rand = random.randrange(0,7)
+        rand = random.randrange(0,30)
         if rand < 1:
             val.append(line)
         else:

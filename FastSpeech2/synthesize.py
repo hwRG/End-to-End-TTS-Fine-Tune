@@ -3,6 +3,8 @@ import torch.nn as nn
 import numpy as np
 import os
 
+from datetime import datetime
+
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from param import user_param
@@ -11,15 +13,15 @@ import argparse
 import re
 from string import punctuation
 
-from fastspeech2 import FastSpeech2
+from .fastspeech2 import FastSpeech2
 
-from text import text_to_sequence
-import utils
+from .text import text_to_sequence
+from . import utils
 
-from g2pk.g2pk import G2p
+from .g2pk.g2pk import G2p
 from jamo import h2j
 
-import hparams
+from . import hparams
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -92,6 +94,9 @@ class Synthesizer:
 
 
     def synthesize(self, text):
+        now = datetime.now()
+        time = now.strftime('%Y-%m-%d_%H.%M.%S')
+
         self.model = self.get_FastSpeech2().to(device)
 
         sentence = text
@@ -137,7 +142,7 @@ class Synthesizer:
         if not os.path.exists(self.hp.test_path):
             os.makedirs(self.hp.test_path)
 
-        wav_path = os.path.join(self.hp.test_path, '{}.wav'.format(sentence))
+        wav_path = os.path.join(self.hp.test_path, '{}.wav'.format(time))
         # 문장 단위로 합성
         utils.hifigan_infer(self.total_mel_postnet_torch, self.hp, path=wav_path, synthesize=True)   
         
@@ -145,8 +150,6 @@ class Synthesizer:
             os.mkdir(self.hp.test_path + '/plot')
         
         return wav_path
-        # Mel-spectrogram plot
-        #utils.plot_data([(self.total_mel_postnet_torch, self.total_f0_output, self.total_energy_output)], sentence_list, filename=os.path.join(self.hp.test_path, 'plot/{}_{}_{}.png'.format(sentence, prefix, self.hp.vocoder_pretrained_model_name)))
 
 
 if __name__ == "__main__":

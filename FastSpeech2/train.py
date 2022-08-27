@@ -5,23 +5,20 @@ from torch.utils.tensorboard import SummaryWriter
 
 import os
 import datetime
+import time
+import re
+import numpy as np
 
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from param import user_param
-import hparams
 
-#os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
-#os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
-
-import numpy as np
-import time
-from fastspeech2 import FastSpeech2
-from loss import FastSpeech2Loss
-from dataset import Dataset
-from optimizer import ScheduledOptim
-import utils
-import re
+from .hparams import hparam
+from .fastspeech2 import FastSpeech2
+from .loss import FastSpeech2Loss
+from .dataset import Dataset
+from .optimizer import ScheduledOptim
+from . import utils
 
 class FS2Train:
     def __init__(self, hp):
@@ -31,8 +28,8 @@ class FS2Train:
         self.device = torch.device('cuda'if torch.cuda.is_available()else 'cpu')
 
         # 학습 시 Multi / Single 판단 (Add)
-        _, self.speaker_table = utils.get_speakers()
-        print('\nSpeaker Count', len(self.speaker_table))
+        """_, self.speaker_table = utils.get_speakers()
+        print('\nSpeaker Count', len(self.speaker_table))"""
 
         # FastSpeech2 정의
         self.model = nn.DataParallel(FastSpeech2()).to(self.device)
@@ -56,7 +53,7 @@ class FS2Train:
             collate_fn=self.dataset.collate_fn, drop_last=True, num_workers=0)
 
 
-    def init_log(self):
+    """def init_log(self):
         # Init logger
         self.log_path = self.hp.log_path
         if not os.path.exists(self.log_path):
@@ -64,17 +61,17 @@ class FS2Train:
             os.makedirs(os.path.join(self.log_path, 'train'))
             os.makedirs(os.path.join(self.log_path, 'validation'))
         self.train_logger = SummaryWriter(os.path.join(self.log_path, 'train'))
-        self.val_logger = SummaryWriter(os.path.join(self.log_path, 'validation'))
+        self.val_logger = SummaryWriter(os.path.join(self.log_path, 'validation'))"""
 
 
     def train(self):
         self.load_data()
-        self.init_log()
+        #self.init_log()
 
         # Load checkpoint if exists
         checkpoint_path = os.path.join(self.hp.checkpoint_path)
         try:
-            checkpoint = torch.load(os.path.join(
+            checkpoint = torch.load(os.path.join('FastSpeech2',
                 'ckpt', 'checkpoint_{}.pth'.format(self.hp.restore_step)))
             self.model.load_state_dict(checkpoint['model'])
             self.optimizer.load_state_dict(checkpoint['optimizer'])
@@ -137,7 +134,7 @@ class FS2Train:
                     d_l = d_loss.item()
                     f_l = f_loss.item()
                     e_l = e_loss.item()
-                    with open(os.path.join(self.log_path, "total_loss.txt"), "a") as f_total_loss:
+                    """with open(os.path.join(self.log_path, "total_loss.txt"), "a") as f_total_loss:
                         f_total_loss.write(str(t_l)+"\n")
                     with open(os.path.join(self.log_path, "mel_loss.txt"), "a") as f_mel_loss:
                         f_mel_loss.write(str(m_l)+"\n")
@@ -148,7 +145,7 @@ class FS2Train:
                     with open(os.path.join(self.log_path, "f0_loss.txt"), "a") as f_f_loss:
                         f_f_loss.write(str(f_l)+"\n")
                     with open(os.path.join(self.log_path, "energy_loss.txt"), "a") as f_e_loss:
-                        f_e_loss.write(str(e_l)+"\n")
+                        f_e_loss.write(str(e_l)+"\n")"""
                     
                     # Backward
                     total_loss = total_loss / self.hp.acc_steps
@@ -178,18 +175,18 @@ class FS2Train:
                         print(str2)
                         print(str3)
                         
-                        with open(os.path.join(self.log_path, "log.txt"), "a") as f_log:
+                        """with open(os.path.join(self.log_path, "log.txt"), "a") as f_log:
                             f_log.write(str1 + "\n")
                             f_log.write(str2 + "\n")
                             f_log.write(str3 + "\n")
-                            f_log.write("\n")
+                            f_log.write("\n")"""
 
-                    self.train_logger.add_scalar('Loss/total_loss', t_l, current_step)
+                    """self.train_logger.add_scalar('Loss/total_loss', t_l, current_step)
                     self.train_logger.add_scalar('Loss/mel_loss', m_l, current_step)
                     self.train_logger.add_scalar('Loss/mel_postnet_loss', m_p_l, current_step)
                     self.train_logger.add_scalar('Loss/duration_loss', d_l, current_step)
                     self.train_logger.add_scalar('Loss/F0_loss', f_l, current_step)
-                    self.train_logger.add_scalar('Loss/energy_loss', e_l, current_step)
+                    self.train_logger.add_scalar('Loss/energy_loss', e_l, current_step)"""
                     
                     if current_step % self.hp.save_step == 0:
                         if not os.path.exists(os.path.join(checkpoint_path, self.hp.user_id)):
@@ -214,7 +211,7 @@ class FS2Train:
 
 if __name__ == "__main__":
     param = user_param.UserParam('hws0120', 'HW-man')
-    hp = hparams.hparam(param)
+    hp = hparam(param)
     trainer = FS2Train(hp)
 
     trainer.train()

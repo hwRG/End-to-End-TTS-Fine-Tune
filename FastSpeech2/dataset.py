@@ -6,9 +6,8 @@ import math
 import os
 import sys # 추가 항목
 
-import audio as Audio
-from utils import pad_1D, pad_2D, process_meta, standard_norm
-from text import text_to_sequence, sequence_to_text
+from .utils import pad_1D, pad_2D, process_meta, standard_norm
+from .text import text_to_sequence
 import time
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -17,8 +16,9 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 class Dataset(Dataset):
     def __init__(self, hp, filename="train.txt", sort=True):
         self.hp = hp
+
         self.basename, self.text = process_meta(os.path.join(self.hp.preprocessed_path, filename))
-        
+
         self.mean_mel, self.std_mel = np.load(os.path.join(self.hp.preprocessed_path, "mel_stat.npy"))
         self.mean_f0, self.std_f0 = np.load(os.path.join(self.hp.preprocessed_path, "f0_stat.npy"))
         self.mean_energy, self.std_energy = np.load(os.path.join(self.hp.preprocessed_path, "energy_stat.npy"))
@@ -31,7 +31,6 @@ class Dataset(Dataset):
     def __getitem__(self, idx):
         t=self.text[idx]
         # basename을 data_process처럼 나누어 저장 (Speaker Dir/Speaker wav)
-
         phone = np.array(text_to_sequence(t, []))
         
         mel_path = os.path.join(

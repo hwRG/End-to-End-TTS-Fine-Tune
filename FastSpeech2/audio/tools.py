@@ -3,9 +3,9 @@ import numpy as np
 from scipy.io.wavfile import read
 from scipy.io.wavfile import write
 
-import audio.stft as stft
-from audio.audio_processing import griffin_lim
-import hparams
+from . import stft as stft
+from .audio_processing import griffin_lim
+from .. import hparams
 
 hp = hparams.hparam()
 

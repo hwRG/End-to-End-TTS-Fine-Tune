@@ -6,7 +6,7 @@ https://github.com/kyubyong/g2pK
 
 import re
 
-from g2pk.utils import gloss, get_rule_id2text
+from .utils import gloss, get_rule_id2text
 
 rule_id2text = get_rule_id2text()
 

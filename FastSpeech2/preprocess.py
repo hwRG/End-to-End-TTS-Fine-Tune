@@ -1,11 +1,11 @@
 import os
-from data import data_processing
+from .data import data_processing
 import scipy.io as sio
 
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from param import user_param
-import hparams
+from . import hparams
 
 class Preprocess():
     def __init__(self, hp):
@@ -42,15 +42,16 @@ class Preprocess():
             os.makedirs(energy_out_dir, exist_ok=True)
         
         
-        if not os.path.exists('preprocessed/{}'.format(self.hp.target_dir)):
-            os.makedirs('preprocessed/{}'.format(self.hp.target_dir))
+        if not os.path.exists('./preprocessed/{}'.format(self.hp.target_dir)):
+            os.makedirs('./preprocessed/{}'.format(self.hp.target_dir))
         # Textgrids 그대로 옮기기
-        os.system('cp -r ../{}/textgrids {}/textgrids'.format(self.hp.direct_dir, self.hp.preprocessed_path))
+        os.system('cp -r {}/textgrids {}/textgrids'.format(self.hp.direct_dir, self.hp.preprocessed_path))
         
         # train, val은 리스트로, 파일 위치와 텍스트를 받아 저장
-        train, val = data_processing.build_from_path(in_dir, out_dir, meta, hp)
+        train, val = data_processing.build_from_path(in_dir, out_dir, meta, self.hp)
 
-        self.write_metadata(train, val, out_dir)
+        if len(train) != 0:
+            self.write_metadata(train, val, out_dir)
     
 if __name__ == "__main__":
     param = user_param.UserParam('hws0120', 'HW-man')

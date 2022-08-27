@@ -2,8 +2,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
-from transformer.Modules import ScaledDotProductAttention
-import hparams
+from .Modules import ScaledDotProductAttention
+from .. import hparams
 
 hp = hparams.hparam()
 
