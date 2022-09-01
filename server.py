@@ -21,8 +21,8 @@ async def tts_train(target_inf: TTS_Dto.TTSTrainDto):
 
     # async로 별도의 thread로 이벤트 train
     # response
-    #FS2_trainer = FS2_e2e_train.FS2Train(hp)
-    #FS2_trainer.E2E_FS2_train() # async 적용
+    FS2_trainer = FS2_e2e_train.FS2Train(hp)
+    FS2_trainer.E2E_FS2_train() # async 적용
 
     HG_trainer = HGtrain.HiFiGANTrain(param)
     HG_trainer.train()          # async 적용, 학습 종료 시 request
@@ -42,14 +42,6 @@ async def tts_inference(target_text: TTS_Dto.TTSInferenceDto):
     # wav 파일을 backend로 전달 (response)
     return FileResponse(wav_path)
 
-"""@app.post("/files/")
-async def create_file(file: bytes = File()):
-    return {"file_size": len(file)}
-
-
-@app.post("/uploadfile/")
-async def create_upload_file(file: UploadFile):
-    return {"filename": file.filename}"""
 
 if __name__ == "__main__":
     uvicorn.run(
