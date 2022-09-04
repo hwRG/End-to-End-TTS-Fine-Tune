@@ -2,8 +2,8 @@
 
 # FastSpeech2 Training
 cd FastSpeech2
-python3 preprocess.py
-python3 train.py
+python3 -m preprocess.py
+python3 -m train.py
 cd ..
 
 # HiFi-GAN Training
