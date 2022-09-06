@@ -56,10 +56,9 @@ class FS2Train:
     """def init_log(self):
         # Init logger
         self.log_path = self.hp.log_path
-        if not os.path.exists(self.log_path):
-            os.makedirs(self.log_path)
-            os.makedirs(os.path.join(self.log_path, 'train'))
-            os.makedirs(os.path.join(self.log_path, 'validation'))
+        os.makedirs(self.log_path, exist_ok=True)
+        os.makedirs(os.path.join(self.log_path, 'train'), exist_ok=True)
+        os.makedirs(os.path.join(self.log_path, 'validation'), exist_ok=True)
         self.train_logger = SummaryWriter(os.path.join(self.log_path, 'train'))
         self.val_logger = SummaryWriter(os.path.join(self.log_path, 'validation'))"""
 
@@ -78,8 +77,7 @@ class FS2Train:
             print("\n---Model Restored at Step {}---\n".format(self.hp.restore_step))
         except:
             print("\n---Start New Training---\n")
-            if not os.path.exists(checkpoint_path):
-                os.makedirs(checkpoint_path)
+            os.makedirs(checkpoint_path, exist_ok=True)
 
         # Define Some Information
         Time = np.array([])
@@ -189,10 +187,8 @@ class FS2Train:
                     self.train_logger.add_scalar('Loss/energy_loss', e_l, current_step)"""
                     
                     if current_step % self.hp.save_step == 0:
-                        if not os.path.exists(os.path.join(checkpoint_path, self.hp.user_id)):
-                            os.mkdir(os.path.join(checkpoint_path, self.hp.user_id))
-                        if not os.path.exists(os.path.join(checkpoint_path, self.hp.target_dir)):
-                            os.mkdir(os.path.join(checkpoint_path, self.hp.target_dir))
+                        os.mkdir(os.path.join(checkpoint_path, self.hp.user_id), exist_ok=True)
+                        os.mkdir(os.path.join(checkpoint_path, self.hp.target_dir), exist_ok=True)
 
                         torch.save({'model': self.model.state_dict(), 'optimizer': self.optimizer.state_dict(
                         )}, os.path.join(checkpoint_path, self.hp.target_dir, 'checkpoint_{}_{}.pth'.format(self.hp.dataset, current_step)))

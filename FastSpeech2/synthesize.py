@@ -139,15 +139,13 @@ class Synthesizer:
             sentence_list.append(text)
             self.fastspeech2_inference(self.model, text)
 
-        if not os.path.exists(self.hp.test_path):
-            os.makedirs(self.hp.test_path)
+        os.makedirs(self.hp.test_path, exist_ok=True)
 
         wav_path = os.path.join(self.hp.test_path, '{}.wav'.format(time))
         # 문장 단위로 합성
         utils.hifigan_infer(self.total_mel_postnet_torch, self.hp, path=wav_path, synthesize=True)   
         
-        if not os.path.exists(self.hp.test_path + '/plot'):
-            os.mkdir(self.hp.test_path + '/plot')
+        os.mkdir(self.hp.test_path + '/plot', exist_ok=True)
         
         return wav_path
 

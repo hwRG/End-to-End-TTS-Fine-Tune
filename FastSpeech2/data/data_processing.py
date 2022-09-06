@@ -129,27 +129,23 @@ def process_utterance(in_dir, out_dir, filename, scalers, hp):
 
 
     # Save alignment
-    if not os.path.exists(os.path.join(out_dir, 'alignment')):
-        os.makedirs(os.path.join(out_dir, 'alignment'), exist_ok=True)
+    os.makedirs(os.path.join(out_dir, 'alignment'), exist_ok=True)
     ali_filename = '{}-ali-{}.npy'.format(hp.dataset, filename[:-4])
     np.save(os.path.join(out_dir, 'alignment', ali_filename), duration, allow_pickle=False)
 
     # Save f0
-    if not os.path.exists(os.path.join(out_dir, 'f0')):
-        os.makedirs(os.path.join(out_dir, 'f0'), exist_ok=True)
+    os.makedirs(os.path.join(out_dir, 'f0'), exist_ok=True)
     # Save fundamental prequency
     f0_filename = '{}-f0-{}.npy'.format(hp.dataset, filename[:-4])
     np.save(os.path.join(out_dir, 'f0', f0_filename), f0, allow_pickle=False)
 
     # Save energy
-    if not os.path.exists(os.path.join(out_dir, 'energy')):
-        os.makedirs(os.path.join(out_dir, 'energy'), exist_ok=True)
+    os.makedirs(os.path.join(out_dir, 'energy'), exist_ok=True)
     energy_filename = '{}-energy-{}.npy'.format(hp.dataset, filename[:-4])
     np.save(os.path.join(out_dir, 'energy', energy_filename), energy, allow_pickle=False)
 
     # Save mel
-    if not os.path.exists(os.path.join(out_dir, 'mel')):
-        os.makedirs(os.path.join(out_dir, 'mel'), exist_ok=True)
+    os.makedirs(os.path.join(out_dir, 'mel'), exist_ok=True)
     
     # Save mel-spectrogram
     mel_filename = '{}-mel-{}.npy'.format(hp.dataset, filename[:-4])
