@@ -46,7 +46,7 @@ async def tts_inference(target_text: TTS_Dto.TTSInferenceDto):
 if __name__ == "__main__":
     uvicorn.run(
         "server:app",
-        port=24850,
+        port=23950,
         host="0.0.0.0",
         reload=True
     )

@@ -32,10 +32,10 @@ class S3TargetLoader:
         bucket = s3r.Bucket(self.aws_bucket_name)
 
         # mkdir
-        os.mkdir(self.hp.base_dir, exist_ok=True)
-        os.mkdir(self.hp.data_dir, exist_ok=True)
-        os.mkdir(self.hp.direct_dir, exist_ok=True)
-        os.mkdir(self.target_path_origin, exist_ok=True)
+        os.makedirs(self.hp.base_dir, exist_ok=True)
+        os.makedirs(self.hp.data_dir, exist_ok=True)
+        os.makedirs(self.hp.direct_dir, exist_ok=True)
+        os.makedirs(self.target_path_origin, exist_ok=True)
 
         for object in bucket.objects.filter(Prefix = self.hp.direct_dir):
             bucket.download_file(object.key, object.key)
@@ -56,14 +56,14 @@ class S3TargetLoader:
 
 
     def down_sampling(self):
-        os.mkdir(self.hp.direct_dir, exist_ok=True)
+        os.makedirs(self.hp.direct_dir, exist_ok=True)
 
         wav_origin_list = os.listdir(self.target_path_origin)
         wav_origin_list.sort()
         for wav in wav_origin_list:
             sample_rate, _ = sio.wavfile.read(self.target_path_origin + '/' + wav)
             if sample_rate != self.hp.sampling_rate:
-                os.mkdir(self.hp.direct_dir, exist_ok=True)
+                os.makedirs(self.hp.direct_dir, exist_ok=True)
                 os.system('ffmpeg -i {} -ac 1 -ar {} {} -y'.format(self.target_path_origin + '/' + wav, str(self.hp.sampling_rate), self.hp.direct_dir + '/' + wav))  
         
         os.system('rm -rf {}'.format(self.target_path_origin))

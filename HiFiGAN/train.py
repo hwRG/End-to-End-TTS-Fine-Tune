@@ -241,7 +241,7 @@ class HiFiGANTrain:
     def train(self):
         #if not os.path.exists(os.path.join('HiFiGAN/dataset/training.txt')):
         #    make_txt()
-
+        os.chdir('HiFiGAN')
         #print('Initializing Training Process..')
 
         parser = argparse.ArgumentParser()
@@ -262,6 +262,7 @@ class HiFiGANTrain:
 
         a = parser.parse_args()
 
+        print(os.getcwd())
         with open(a.config) as f:
             data = f.read()
 

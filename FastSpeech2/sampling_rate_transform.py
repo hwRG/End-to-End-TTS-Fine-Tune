@@ -30,8 +30,8 @@ def main():
                 wav_path = os.path.join(in_dir, 'wavs', speaker, wav)
                 wav_before_path = os.path.join(in_dir, 'wavs_{}'.format(str(sample_rate)), speaker, wav)
 
-                os.mkdir(os.path.join(in_dir, 'wavs'), exist_ok=True)
-                os.mkdir(os.path.join(in_dir, 'wavs', speaker), exist_ok=True)
+                os.makedirs(os.path.join(in_dir, 'wavs'), exist_ok=True)
+                os.makedirs(os.path.join(in_dir, 'wavs', speaker), exist_ok=True)
 
                 os.system("ffmpeg -i {} -ac 1 -ar {} {}".format(wav_before_path, str(hp.sampling_rate), wav_path))
     

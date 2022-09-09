@@ -5,7 +5,7 @@ class hparam:
         # async로부터 받은 param
         self.param = param
 
-        self.restore_step = '300000'
+        self.restore_step = '300000_new'
         self.synthesize_step = '305000'
 
         # Default Sampling rate - 22050
@@ -30,8 +30,9 @@ class hparam:
 
             # Vocoder
             self.vocoder = 'hifigan'
-            self.vocoder_pretrained_model_name = self.dataset + "_g_00610000.pt" # 600000 + 10000
-            self.vocoder_pretrained_model_path = os.path.join(self.checkpoint_path, self.param.target_dir, self.vocoder_pretrained_model_name)
+            #self.vocoder_pretrained_model_name = self.dataset + "_g_00350000.pt" 
+            self.vocoder_pretrained_model_name = "g_00350000.pt" # 600000 + 10000
+            self.vocoder_pretrained_model_path = os.path.join(self.checkpoint_path, self.vocoder_pretrained_model_name)
 
             self.meta_name = "fine_tune_transcript.txt"
             self.textgrid_name = self.dataset + "textgrids.zip"

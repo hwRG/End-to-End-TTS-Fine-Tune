@@ -145,7 +145,7 @@ class Synthesizer:
         # 문장 단위로 합성
         utils.hifigan_infer(self.total_mel_postnet_torch, self.hp, path=wav_path, synthesize=True)   
         
-        os.mkdir(self.hp.test_path + '/plot', exist_ok=True)
+        os.makedirs(self.hp.test_path + '/plot', exist_ok=True)
         
         return wav_path
 

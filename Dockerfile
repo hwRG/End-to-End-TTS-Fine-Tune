@@ -1,4 +1,4 @@
-FROM nvidia/cuda:10.0-runtime-ubuntu18.04
+FROM nvidia/cuda:11.4.0-runtime-ubuntu18.04
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH

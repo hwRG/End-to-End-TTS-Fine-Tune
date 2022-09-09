@@ -187,8 +187,8 @@ class FS2Train:
                     self.train_logger.add_scalar('Loss/energy_loss', e_l, current_step)"""
                     
                     if current_step % self.hp.save_step == 0:
-                        os.mkdir(os.path.join(checkpoint_path, self.hp.user_id), exist_ok=True)
-                        os.mkdir(os.path.join(checkpoint_path, self.hp.target_dir), exist_ok=True)
+                        os.makedirs(os.path.join(checkpoint_path, self.hp.user_id), exist_ok=True)
+                        os.makedirs(os.path.join(checkpoint_path, self.hp.target_dir), exist_ok=True)
 
                         torch.save({'model': self.model.state_dict(), 'optimizer': self.optimizer.state_dict(
                         )}, os.path.join(checkpoint_path, self.hp.target_dir, 'checkpoint_{}_{}.pth'.format(self.hp.dataset, current_step)))
