@@ -140,6 +140,7 @@ FastSpeech2/eval/
 FastSpeech2/preprocessed/
 FastSpeech2/vocoder/pretrained_models/
 FastSpeech2/speaker_info.json
+FastSpeech2/encoder/saved_models
 
 HiFi-GAN/ckpt/
 HiFi-GAN/dataset/
