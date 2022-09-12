@@ -5,11 +5,12 @@ class hparam:
         # async로부터 받은 param
         self.param = param
 
-        self.restore_step = '300000_new'
+        self.restore_step = '0'
         self.synthesize_step = '305000'
 
         # Default Sampling rate - 22050
         self.sampling_rate = 22050
+        self.checkpoint_path = os.path.join("./ckpt/")
 
         if self.param != None:
             self.base_dir = self.param.base_dir
@@ -23,7 +24,6 @@ class hparam:
 
             # Checkpoints and synthesis path
             self.preprocessed_path = os.path.join("./preprocessed/", self.target_dir)
-            self.checkpoint_path = os.path.join("./ckpt/")
             self.eval_path = os.path.join("./eval/", self.target_dir)
             self.log_path = os.path.join("./log/", self.target_dir)
             self.test_path = os.path.join("./results/", self.target_dir)
@@ -84,7 +84,7 @@ class hparam:
 
         # Optimizer
         self.batch_size = 8
-        self.epochs = 630 # 5000 step
+        self.epochs = 1300 # 5000 step
         self.n_warm_up_step = 4000
         self.grad_clip_thresh = 1.0
         self.acc_steps = 1
@@ -108,7 +108,7 @@ class hparam:
         self.log_offset = 1.
 
         # Save, log and synthesis
-        self.save_step = 5000
+        self.save_step = 1000
         self.eval_step = 10000
         self.eval_size = 256
         self.log_step = 1000

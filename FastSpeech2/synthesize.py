@@ -76,7 +76,9 @@ class Synthesizer:
         text = self.kor_preprocess(text)
         src_len = torch.from_numpy(np.array([text.shape[1]])).to(device)
 
-        mel, mel_postnet, log_duration_output, f0_output, energy_output, _, _, mel_len = model(text, src_len, synthesize=True)
+        target_voice = os.path.join(self.hp.direct_dir, '77.wav')
+
+        mel, mel_postnet, log_duration_output, f0_output, energy_output, _, _, mel_len = model(text, src_len, synthesize=True, target_voice=target_voice)
         
         mel_torch = mel.transpose(1, 2).detach()
         mel_postnet_torch = mel_postnet.transpose(1, 2).detach()
@@ -149,10 +151,9 @@ class Synthesizer:
         
         return wav_path
 
-
-if __name__ == "__main__":
+def custom_synthesizer(id='hws0120', target='HW-man'):
     # Test
-    param = user_param.UserParam('pnylove12', 'NY-woman')
+    param = user_param.UserParam(id, target)
     hp = hparams.hparam(param)
     synthesizer = Synthesizer(hp)
 
@@ -194,3 +195,6 @@ if __name__ == "__main__":
             synthesizer.synthesize(sent)
     else:
         synthesizer.synthesize(sentence)
+
+if __name__ == "__main__":
+    custom_synthesizer()

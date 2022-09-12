@@ -2,11 +2,19 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+import librosa
+
+from pathlib import Path
+
 from .transformer import Models 
 from .transformer import Layers
 from .modules import VarianceAdaptor
 from .utils import get_mask_from_lengths, Embedding, SpeakerIntegrator, get_speakers
+
+from .encoder import inference as SpeakerEncoder
 from . import hparams
+
+import os
 
 hp = hparams.hparam()
 
@@ -38,6 +46,9 @@ class FastSpeech2(nn.Module):
             else:
                 self.single = False
                 print('Base: Multi Speaker')"""
+
+        corpus_path = Path(os.path.join(hp.checkpoint_path,'corpus_345000.pt'))
+        SpeakerEncoder.load_model(corpus_path)
         
         # Speaker Embedding layer 정의
         self.speaker_embeds = Embedding(len(self.speaker_table), speaker_embed_dim, padding_idx=0, std=speaker_embed_std)
@@ -58,15 +69,22 @@ class FastSpeech2(nn.Module):
             self.postnet = Layers.PostNet()
 
 
-    def forward(self, src_seq, src_len, speaker_ids=None, mel_len=None, d_target=None, p_target=None, e_target=None, max_src_len=None, max_mel_len=None, synthesize=False):
+    def forward(self, src_seq, src_len, speaker_ids=None, mel_len=None, d_target=None, p_target=None, e_target=None, max_src_len=None, max_mel_len=None, synthesize=False, target_voice=False):
         src_mask = get_mask_from_lengths(src_len, max_src_len)
         mel_mask = get_mask_from_lengths(mel_len, max_mel_len) if mel_len is not None else None
 
         # Single Speaker (Fine-tune)
-        if self.single == True or synthesize == True: 
+        if self.single == True: 
             # Single Speaker 또는 합성할 때 Encoder만 사용
             encoder_output = self.encoder(src_seq, src_mask)
-            
+            if synthesize == True:
+                ## target voice를 선택하여 화자의 특징 강화
+                original_wav, sampling_rate = librosa.load(target_voice)
+                preprocessed_wav = SpeakerEncoder.preprocess_wav(original_wav, sampling_rate)
+
+                embed = SpeakerEncoder.embed_utterance(preprocessed_wav)
+                encoder_output = encoder_output + torch.tensor([embed]).to(device)
+
             # Multi-speaker로 임베딩을 지정해 합성할 경우 사용
             """
             if self.single == False:

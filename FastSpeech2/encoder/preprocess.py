@@ -1,8 +1,8 @@
 from multiprocess.pool import ThreadPool
-from encoder.params_data import *
-from encoder.config import librispeech_datasets, anglophone_nationalites
+from .params_data import *
+from .config import librispeech_datasets, anglophone_nationalites
 from datetime import datetime
-from encoder import audio
+from . import audio
 from pathlib import Path
 from tqdm import tqdm
 import numpy as np
