@@ -88,10 +88,10 @@ class DataPreprocessing:
     def mfa_train(self):
         print("MFA Training Start.. \n")
 
-        os.system('mfa train_g2p ' + self.dict_name + ' ' + self.name + '_korean.zip --clear')
+        os.system('mfa train_g2p ' + self.dict_name + ' ' + self.name + '_korean.zip --clean')
         print("MFA train_g2p Done\n")
 
-        os.system('mfa g2p ' + self.name + '_korean.zip . ' + self.name + '_korean.txt')
+        os.system('mfa g2p ' + self.name + '_korean.zip . ' + self.name + '_korean.txt --clean')
         print("MFA g2p Done\n")
     
         os.system('mfa train . ' + self.name + '_korean.txt ./textgrids --clean')

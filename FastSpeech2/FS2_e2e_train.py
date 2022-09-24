@@ -8,17 +8,17 @@ class FS2Train:
         self.hp = hp
 
     def E2E_FS2_train(self):
-        #s3_loader = s3_target_wav_load.S3TargetLoader(self.hp)
-        #s3_loader.s3_target_load()
+        '''s3_loader = s3_target_wav_load.S3TargetLoader(self.hp)
+        s3_loader.s3_target_load()
         print('S3 Complete!')
         
-        #Processor = data_preprocessing.DataPreprocessing(self.hp)
-        #Processor.data_preprocess()
+        Processor = data_preprocessing.DataPreprocessing(self.hp)
+        Processor.data_preprocess()'''
         
-        #preprocessor = preprocess.Preprocess(self.hp)
-        #preprocessor.preprocess()
+        preprocessor = preprocess.Preprocess(self.hp)
+        preprocessor.preprocess()
 
         FS2_trainer = train.FS2Train(self.hp)
         FS2_trainer.train()
-
+        
         

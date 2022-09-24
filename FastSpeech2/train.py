@@ -69,15 +69,14 @@ class FS2Train:
 
         # Load checkpoint if exists
         checkpoint_path = os.path.join(self.hp.checkpoint_path)
+        os.makedirs(checkpoint_path, exist_ok=True)
         try:
-            checkpoint = torch.load(os.path.join('FastSpeech2',
-                'ckpt', 'checkpoint_{}.pth'.format(self.hp.restore_step)))
+            checkpoint = torch.load(os.path.join(self.hp.checkpoint_path, 'checkpoint_{}.pth'.format(self.hp.restore_step)))
             self.model.load_state_dict(checkpoint['model'])
             self.optimizer.load_state_dict(checkpoint['optimizer'])
             print("\n---Model Restored at Step {}---\n".format(self.hp.restore_step))
         except:
             print("\n---Start New Training---\n")
-            os.makedirs(checkpoint_path, exist_ok=True)
 
         # Define Some Information
         Time = np.array([])

@@ -5,13 +5,20 @@ from HiFiGAN import train as HGtrain
 from param import user_param
 
 from FastSpeech2 import synthesize
-
+import playsound
 import uvicorn
 
 import requests
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
+
+import IPython.display as ipd
 app = FastAPI()
+
+@app.get("/tts/demo/audio")
+async def demo():
+
+    return ipd.Audio('fine-tune-dataset/hws0120/HW-man/1.wav')
 
 @app.post("/tts/train")
 async def tts_train(target_inf: TTS_Dto.TTSTrainDto):

@@ -47,7 +47,7 @@ class FastSpeech2(nn.Module):
                 self.single = False
                 print('Base: Multi Speaker')"""
 
-        corpus_path = Path(os.path.join(hp.checkpoint_path,'corpus_345000.pt'))
+        corpus_path = Path(os.path.join(hp.checkpoint_path,'pretrained.pt'))
         SpeakerEncoder.load_model(corpus_path)
         
         # Speaker Embedding layer 정의

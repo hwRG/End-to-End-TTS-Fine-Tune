@@ -5,10 +5,9 @@ class hparam:
         # async로부터 받은 param
         self.param = param
 
-        self.restore_step = '0'
+        self.restore_step = '300000'
         self.synthesize_step = '305000'
 
-        # Default Sampling rate - 22050
         self.sampling_rate = 22050
         self.checkpoint_path = os.path.join("./ckpt/")
 
@@ -31,7 +30,7 @@ class hparam:
             # Vocoder
             self.vocoder = 'hifigan'
             #self.vocoder_pretrained_model_name = self.dataset + "_g_00350000.pt" 
-            self.vocoder_pretrained_model_name = "g_00350000.pt" # 600000 + 10000
+            self.vocoder_pretrained_model_name = "g_00150000.pt" # 600000 + 10000
             self.vocoder_pretrained_model_path = os.path.join(self.checkpoint_path, self.vocoder_pretrained_model_name)
 
             self.meta_name = "fine_tune_transcript.txt"
@@ -84,7 +83,7 @@ class hparam:
 
         # Optimizer
         self.batch_size = 8
-        self.epochs = 1300 # 5000 step
+        self.epochs = 630 # 5000 step
         self.n_warm_up_step = 4000
         self.grad_clip_thresh = 1.0
         self.acc_steps = 1
@@ -108,7 +107,7 @@ class hparam:
         self.log_offset = 1.
 
         # Save, log and synthesis
-        self.save_step = 1000
+        self.save_step = 5000
         self.eval_step = 10000
         self.eval_size = 256
         self.log_step = 1000
