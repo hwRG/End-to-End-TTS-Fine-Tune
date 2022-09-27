@@ -2,9 +2,8 @@
 
 ## Introduction
 
-- 본 프로젝트는 **‘친근한 목소리를 가진 노인 맞춤 인공지능 비서'**의 목소리 제작을 목표로 합니다. 더이상 '시리', '빅스비', '아리'의 목소리에 의지하는 것이 아닌, 단 7분의 녹음본으로 가족, 친구 목소리로 인공지능 비서 목소리를 대체합니다.
-
-- AI 스피커라는 즉각 생성에 대응하고자 **Non-Autoregressive Acoustic Model 'FastSpeech2'**과 **GAN 기반 Vocoder Model 'HiFi-GAN'**을 채택하여 퀄리티와 생성 속도를 고려했습니다.
+- 본 프로젝트는 ‘**친근한 목소리를 가진 노인 맞춤 인공지능 비서**'의 목소리 제작을 목표로 합니다. 더이상 '시리', '빅스비', '아리'의 목소리에 의지하는 것이 아닌, 단 7분의 녹음본으로 가족, 친구 목소리로 인공지능 비서 목소리를 대체합니다.
+- AI 스피커라는 즉각 생성에 대응하고자 **Non-Autoregressive Acoustic Model FastSpeech2과 GAN 기반 Vocoder Model HiFi-GAN**을 채택하여 퀄리티와 생성 속도를 고려했습니다.
 - 성능 향상을 위해 모델에 추가적인 커스텀을 진행한 [D-vector Multi Speaker FastSpeech2](https://github.com/hwRG/FastSpeech2-Pytorch-Korean-Multi-Speaker)와 [HiFi-GAN](https://github.com/hwRG/HiFi-GAN-Pytorch) 모델을 Fine-tuning 환경을 구축하여, shell script로 쉽게 학습과 합성을 수행할 수 있도록 구성했습니다.
 - 또한 앱에 실시간 TTS를 제공하기 위해 FastAPI를 활용하여 서버를 구성하고 Backend와 연동합니다.
 
