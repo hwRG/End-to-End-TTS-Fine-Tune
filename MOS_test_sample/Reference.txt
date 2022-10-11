@@ -1,0 +1,3 @@
+Initial - Speaker (HW: man / NY: woman)
+Front Number - Text Inedx
+Back Number - Model Index (1: Approach FS2 / 2: Origin FS2)
