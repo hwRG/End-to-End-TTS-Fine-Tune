@@ -2,11 +2,11 @@
 
 ## Introduction
 
-- 본 프로젝트는 ‘**어르신을 위한 인공지능 비서**'의 TTS 시스템 개발을 목표로 합니다. 5분의 음성 녹음만으로, 가족 또는 친구, 연인의 목소리의 인공지능 비서를 만들 수 있습니다.
+- 본 프로젝트는 ‘**어르신을 위한 인공지능 비서**'의 TTS 시스템 개발을 목표로 합니다. 5분의 음성 녹음만으로, 가족 또는 친구, 연인의 목소리를 가진 인공지능 비서를 만들 수 있습니다.
 - 실시간으로 생성이 필요한 인공지능 스피커에 대응하기 위해, Non-Autoregressive Acoustic Model FastSpeech2과 GAN 기반 Vocoder Model HiFi-GAN을 채택하여 퀄리티와 생성 속도를 고려했습니다.
 - Multi-Speaker의 성능 향상을 위해, 추가적인 커스텀이 진행되었습니다.
 - 본 레포지토리는 [D-vector Multi Speaker FastSpeech2](https://github.com/hwRG/FastSpeech2-Pytorch-Korean-Multi-Speaker), [HiFi-GAN](https://github.com/hwRG/HiFi-GAN-Pytorch) 모델을 Fine-Tune이 가능하도록 구성하기 위해 shell script를 활용하여, 학습과 생성 과정을 간단히 수행할 수 있도록 구성했습니다.
-- + 어플에서 실시간 TTS를 제공하기 위해, FastAPI를 활용하여 서버를 구성하고 Backend와 연동합니다.
+- 어플에서 실시간 TTS를 제공하기 위해, FastAPI를 활용하여 서버를 구성하고 Backend와 연동합니다.
 
 <br>
 
@@ -45,7 +45,9 @@
 
 
 ## Previous Works
-- [FastSpeech2](https://drive.google.com/drive/folders/141Q7XcxIVVgegMQrz6LNspIDrteUNIrA?usp=sharing)와 [HiFi-GAN](https://drive.google.com/drive/folders/1-eEYTB5Av9jNql0WGBlRoi-WH2J7bp5Y) pre-trained ckpt의 파일명을 일치시킨 후 모델 각 디렉토리에 보관합니다. (FastSpeech2: 30만 step 개인 데이터셋에 학습 / HiFi-GAN - Jungil King 저자분의 공식 pretrained - UNIVERSAL_V1) 
+- [FastSpeech2](https://drive.google.com/drive/folders/141Q7XcxIVVgegMQrz6LNspIDrteUNIrA?usp=sharing)와 [HiFi-GAN](https://drive.google.com/drive/folders/1-eEYTB5Av9jNql0WGBlRoi-WH2J7bp5Y) pre-trained ckpt의 파일명을 일치시킨 후 모델 각 디렉토리에 보관합니다.
+
+  (FastSpeech2: 3만 step 학습 / HiFi-GAN - Jungil King 저자분의 공식 pretrained - UNIVERSAL_V1) 
 
 - 학습과 합성을 위해 모든 의존성 패키지가 포함된 도커 이미지를 불러와 실행합니다.
 
