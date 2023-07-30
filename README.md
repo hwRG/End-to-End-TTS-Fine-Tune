@@ -2,19 +2,21 @@
 
 ## Introduction
 
-- 본 프로젝트는 ‘**친근한 목소리를 가진 노인 맞춤 인공지능 비서**'의 목소리 제작을 목표로 합니다. 더이상 '시리', '빅스비', '아리'의 목소리에 의지하는 것이 아닌, 단 7분의 녹음본으로 가족, 친구 목소리로 인공지능 비서 목소리를 대체합니다.
-- AI 스피커라는 즉각 생성에 대응하고자 **Non-Autoregressive Acoustic Model FastSpeech2과 GAN 기반 Vocoder Model HiFi-GAN**을 채택하여 퀄리티와 생성 속도를 고려했습니다.
-- 성능 향상을 위해 모델에 추가적인 커스텀을 진행한 [D-vector Multi Speaker FastSpeech2](https://github.com/hwRG/FastSpeech2-Pytorch-Korean-Multi-Speaker)와 [HiFi-GAN](https://github.com/hwRG/HiFi-GAN-Pytorch) 모델을 Fine-tuning 환경을 구축하여, shell script로 쉽게 학습과 합성을 수행할 수 있도록 구성했습니다.
-- 또한 앱에 실시간 TTS를 제공하기 위해 FastAPI를 활용하여 서버를 구성하고 Backend와 연동합니다.
+- 본 프로젝트는 ‘**어르신을 위한 인공지능 비서**'의 TTS 시스템 개발을 목표로 합니다. 5분의 음성 녹음만으로, 가족 또는 친구, 연인의 목소리의 인공지능 비서를 만들 수 있습니다.
+- 실시간으로 생성이 필요한 인공지능 스피커에 대응하기 위해, Non-Autoregressive Acoustic Model FastSpeech2과 GAN 기반 Vocoder Model HiFi-GAN을 채택하여 퀄리티와 생성 속도를 고려했습니다.
+- Multi-Speaker의 성능 향상을 위해, 추가적인 커스텀이 진행되었습니다.
+- 본 레포지토리는 [D-vector Multi Speaker FastSpeech2](https://github.com/hwRG/FastSpeech2-Pytorch-Korean-Multi-Speaker), [HiFi-GAN](https://github.com/hwRG/HiFi-GAN-Pytorch) 모델을 Fine-Tune이 가능하도록 구성하기 위해 shell script를 활용하여, 학습과 생성 과정을 간단히 수행할 수 있도록 구성했습니다.
+- + 어플에서 실시간 TTS를 제공하기 위해, FastAPI를 활용하여 서버를 구성하고 Backend와 연동합니다.
 
 <br>
 
 ## Project Purpose
 
-1. Acoustic-Custom Fastspeech2, Vocoder-HiFiGAN 모델을 활용한 고성능 및 고속 음성 합성
+1. Acoustic-Fastspeech2(Custom), Vocoder-HiFiGAN 모델을 활용한 고성능 및 고속 음성합성
 
-2. 소량의 데이터로 개인화를 위한 Transfer Learning을 활용해 합리적인 성능 제공  
-3. 한국어 데이터셋에 Fine-tuning 과정이 실시간으로 이루어지도록 API 제공
+2. 소량의 데이터로 개인화를 위한 Transfer Learning을 활용해 합리적인 성능 제공
+   
+3. 실시간으로 한국어 데이터셋에 Fine-Tune과 생성이 가능한 API 제공
 
 <br>
 
@@ -43,7 +45,7 @@
 
 
 ## Previous Works
-- [링크]()에서 FastSpeech2와 HiFi-GAN에 대한 pre-trained ckpt를 불러와 모델 각각 ckpt 디렉토리에 보관합니다. (FastSpeech2 25만 step, HiFi-GAN 30만 step) 
+- [FastSpeech2](https://drive.google.com/drive/folders/141Q7XcxIVVgegMQrz6LNspIDrteUNIrA?usp=sharing)와 [HiFi-GAN](https://drive.google.com/drive/folders/1-eEYTB5Av9jNql0WGBlRoi-WH2J7bp5Y) pre-trained ckpt의 파일명을 일치시킨 후 모델 각 디렉토리에 보관합니다. (FastSpeech2: 30만 step 개인 데이터셋에 학습 / HiFi-GAN - Jungil King 저자분의 공식 pretrained - UNIVERSAL_V1) 
 
 - 학습과 합성을 위해 모든 의존성 패키지가 포함된 도커 이미지를 불러와 실행합니다.
 
@@ -88,7 +90,7 @@
   [Dataset_Name](ex. HW)
   ```
 
-- FastSpeech2를 5000 step 학습해 끝나면 HiFi-GAN도 스크립트를 실행합니다.  
+- FastSpeech2 5000 step 학습이 완료되면, HiFi-GAN 스크립트를 실행합니다.  
 
   ```
   sh run_HiFi-GAN_train.sh
@@ -112,8 +114,7 @@
 
 ## Project Pipeline
 ![](https://velog.velcdn.com/images/hws0120/post/0e5f6fbd-002a-4f0f-a172-b0201480bb23/image.png)
-학습과 합성이 수행되는 파이프라인입니다.<br>
 
-학습 / 합성 과정에서 각각의 컨테이너를 구축하고 그림과 같은 과정을 수행합니다.<br>
+학습 및 합성 과정에서 각각의 컨테이너를 구축하고 그림과 같은 과정을 수행합니다.<br>
 
-잘 학습된 Multi-Speaker HiFi-GAN checkpoint가 있다면 HiFi-GAN 학습은 생략해도 됩니다.
+적절한 HiFi-GAN 체크포인트가 있을 경우, HiFi-GAN 학습은 생략하셔도 무방합니다.
